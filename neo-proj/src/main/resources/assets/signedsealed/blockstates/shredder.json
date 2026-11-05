@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": {"model": "signedsealed:block/shredder"},
+    "facing=east": {"model": "signedsealed:block/shredder", "y": 90},
+    "facing=south": {"model": "signedsealed:block/shredder", "y": 180},
+    "facing=west": {"model": "signedsealed:block/shredder", "y": 270}
+  }
+}

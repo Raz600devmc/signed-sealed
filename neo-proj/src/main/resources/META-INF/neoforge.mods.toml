@@ -1,0 +1,24 @@
+modLoader="javafml"
+loaderVersion="[4,)"
+license="MIT"
+
+[[mods]]
+modId="signedsealed"
+version="2.2.0"
+displayName="Signed & Sealed"
+authors="Raz600"
+description='''Documents, stamps, signatures and passports for roleplay servers: ID cards, tickets and fines, stamp and visa designers, hand-drawn signatures, forgeries that the registry catches, printer and shredder, security marks and authenticity checks, PNG/PDF export. New in 2.2: newspapers, leaflets and posters with a full layout editor and 11 bundled fonts, letters sealed with wax, mailboxes and document folders. All documents are in-game only.'''
+
+[[dependencies.signedsealed]]
+    modId="neoforge"
+    type="required"
+    versionRange="[21.1.100,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.signedsealed]]
+    modId="minecraft"
+    type="required"
+    versionRange="[1.21.1,1.21.2)"
+    ordering="NONE"
+    side="BOTH"
