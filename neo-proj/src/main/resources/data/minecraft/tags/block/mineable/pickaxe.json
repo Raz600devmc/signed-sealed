@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "signedsealed:printer",
+    "signedsealed:shredder",
+    "signedsealed:mailbox",
+    "signedsealed:ticket_gate",
+    "signedsealed:filing_cabinet",
+    "signedsealed:scanner",
+    "signedsealed:computer"
+  ]
+}

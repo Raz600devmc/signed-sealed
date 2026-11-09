@@ -1,0 +1,3 @@
+{"type": "minecraft:crafting_shaped", "pattern": ["FIP", "LLL"],
+ "key": {"F": {"item": "minecraft:feather"}, "I": {"item": "minecraft:ink_sac"}, "P": {"item": "minecraft:paper"}, "L": {"item": "minecraft:leather"}},
+ "result": {"item": "signedsealed:forgery_kit"}}

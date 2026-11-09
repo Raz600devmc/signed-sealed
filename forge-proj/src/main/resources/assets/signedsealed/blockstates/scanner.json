@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "signedsealed:block/scanner"
+    },
+    "facing=east": {
+      "model": "signedsealed:block/scanner",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "signedsealed:block/scanner",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "signedsealed:block/scanner",
+      "y": 270
+    }
+  }
+}

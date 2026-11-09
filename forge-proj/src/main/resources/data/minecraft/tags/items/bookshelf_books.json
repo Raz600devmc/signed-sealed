@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "signedsealed:document",
+    "signedsealed:passport",
+    "signedsealed:newspaper",
+    "signedsealed:envelope",
+    "signedsealed:folder"
+  ]
+}
