@@ -1,8 +1,0 @@
-{
-  "variants": {
-    "facing=north": {"model": "signedsealed:block/printer"},
-    "facing=east": {"model": "signedsealed:block/printer", "y": 90},
-    "facing=south": {"model": "signedsealed:block/printer", "y": 180},
-    "facing=west": {"model": "signedsealed:block/printer", "y": 270}
-  }
-}
