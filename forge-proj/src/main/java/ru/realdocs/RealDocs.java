@@ -58,6 +58,7 @@ public class RealDocs {
       MinecraftForge.EVENT_BUS.register(Perms.class);
       MinecraftForge.EVENT_BUS.register(RdCommand.class);
       MinecraftForge.EVENT_BUS.register(MailService.class);
+      MinecraftForge.EVENT_BUS.register(ru.realdocs.server.BackupService.class);
       MinecraftForge.EVENT_BUS.register(ru.realdocs.server.BureauService.class);
       MinecraftForge.EVENT_BUS.register(ru.realdocs.command.OfficeCommand.class);
       MinecraftForge.EVENT_BUS.register(AdminService.class);

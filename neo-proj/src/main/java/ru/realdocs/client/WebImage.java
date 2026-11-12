@@ -164,6 +164,23 @@ public final class WebImage {
    }
 
    private static BufferedImage decode(byte[] bytes) throws IOException {
+      // Check the declared size before decoding, so a tiny file claiming a huge resolution cannot exhaust memory.
+      try (javax.imageio.stream.ImageInputStream in = ImageIO.createImageInputStream(new ByteArrayInputStream(bytes))) {
+         java.util.Iterator<javax.imageio.ImageReader> readers = in == null ? java.util.Collections.emptyIterator() : ImageIO.getImageReaders(in);
+         if (readers.hasNext()) {
+            javax.imageio.ImageReader r = readers.next();
+
+            try {
+               r.setInput(in, true, true);
+               if ((long)r.getWidth(0) * (long)r.getHeight(0) > 36000000L || r.getWidth(0) > 12000 || r.getHeight(0) > 12000) {
+                  throw new IOException(L.t("Слишком большое разрешение"));
+               }
+            } finally {
+               r.dispose();
+            }
+         }
+      }
+
       BufferedImage img = ImageIO.read(new ByteArrayInputStream(bytes));
       if (img == null) {
          throw new IOException(L.t("Это не изображение или формат не поддерживается (нужен PNG, JPG, GIF или BMP)"));

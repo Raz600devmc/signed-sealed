@@ -12,7 +12,8 @@ import net.minecraftforge.network.NetworkEvent.Context;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public final class Net {
-   private static final String PROTOCOL = "10";
+   /** Network version = mod MAJOR.MINOR: patch releases stay compatible, and a mismatch shows which versions clash. */
+   private static final String PROTOCOL = "2.5";
    public static final SimpleChannel CH = NetworkRegistry.newSimpleChannel(new ResourceLocation("signedsealed", "main"), () -> PROTOCOL, PROTOCOL::equals, PROTOCOL::equals);
    private static int nextId = 0;
 

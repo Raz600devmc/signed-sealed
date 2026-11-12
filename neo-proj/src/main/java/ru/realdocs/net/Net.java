@@ -17,7 +17,8 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 public final class Net {
-   private static final String PROTOCOL = "10";
+   /** Network version = mod MAJOR.MINOR: patch releases stay compatible, and a mismatch shows which versions clash. */
+   private static final String PROTOCOL = "2.5";
    private static final Map<Class<?>, Type<Net.Wrap>> TYPES = new HashMap<>();
 
    private Net() {

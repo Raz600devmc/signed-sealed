@@ -58,6 +58,7 @@ public class RealDocs {
       NeoForge.EVENT_BUS.register(RdCommand.class);
       NeoForge.EVENT_BUS.register(AdminService.class);
       NeoForge.EVENT_BUS.register(MailService.class);
+      NeoForge.EVENT_BUS.register(ru.realdocs.server.BackupService.class);
       NeoForge.EVENT_BUS.register(ru.realdocs.server.BureauService.class);
       NeoForge.EVENT_BUS.register(ru.realdocs.command.OfficeCommand.class);
    }

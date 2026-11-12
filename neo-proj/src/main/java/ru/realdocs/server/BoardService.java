@@ -155,21 +155,43 @@ public final class BoardService {
       }
    }
 
+   /** One registry scan per newspaper title every 5 s, shared by every board that follows it. */
+   private static final java.util.Map<String, FeedHit> FEED_CACHE = new java.util.HashMap<>();
+
+   private static final class FeedHit {
+      long time;
+      String id;
+      DocStore.PaperRec best;
+   }
+
    /** Keeps the newest published issue of the board's newspaper in the first slot. */
    public static void refreshFeed(NoticeBoardEntity b) {
       if (!b.feed.isEmpty() && b.level().getServer() != null) {
          DocStore store = DocStore.get(b.level().getServer());
          String key = DocStore.titleKey(b.feed);
-         String bestId = null;
-         DocStore.PaperRec best = null;
+         long now = b.level().getGameTime();
+         FeedHit hit = FEED_CACHE.get(key);
+         if (hit == null || now - hit.time >= 100L || now < hit.time) {
+            hit = new FeedHit();
+            hit.time = now;
 
-         for (java.util.Map.Entry<String, DocStore.PaperRec> e : store.papers.entrySet()) {
-            DocStore.PaperRec r = e.getValue();
-            if (r.published && !r.revoked && DocStore.titleKey(r.name).equals(key) && (best == null || r.time > best.time)) {
-               best = r;
-               bestId = e.getKey();
+            for (java.util.Map.Entry<String, DocStore.PaperRec> e : store.papers.entrySet()) {
+               DocStore.PaperRec r = e.getValue();
+               if (r.published && !r.revoked && DocStore.titleKey(r.name).equals(key) && (hit.best == null || r.time > hit.best.time)) {
+                  hit.best = r;
+                  hit.id = e.getKey();
+               }
             }
+
+            if (FEED_CACHE.size() > 256) {
+               FEED_CACHE.clear();
+            }
+
+            FEED_CACHE.put(key, hit);
          }
+
+         DocStore.PaperRec best = hit.best;
+         String bestId = hit.id;
 
          if (best != null && !bestId.equals(PaperCodec.ref(b.item(0)).id)) {
             ItemStack s = new ItemStack(ModItems.NEWSPAPER.get());
