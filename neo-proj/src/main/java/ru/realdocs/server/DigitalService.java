@@ -61,6 +61,16 @@ public final class DigitalService {
       }
    }
 
+   /** Network of the computer named in a request (X, Y, Z), if the player may use it. */
+   public static String networkAt(ServerPlayer sp, CompoundTag t) {
+      if (!t.contains("X")) {
+         return null;
+      } else {
+         TerminalBE b = be(sp, new BlockPos(t.getInt("X"), t.getInt("Y"), t.getInt("Z")));
+         return b != null && b.canUse(sp) ? b.net() : null;
+      }
+   }
+
    static String key(String net) {
       return net.strip().toLowerCase(Locale.ROOT);
    }

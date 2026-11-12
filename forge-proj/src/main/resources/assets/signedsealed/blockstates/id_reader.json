@@ -1,0 +1,49 @@
+{
+  "variants": {
+    "facing=north,result=0": {
+      "model": "signedsealed:block/id_reader"
+    },
+    "facing=north,result=1": {
+      "model": "signedsealed:block/id_reader_ok"
+    },
+    "facing=north,result=2": {
+      "model": "signedsealed:block/id_reader_deny"
+    },
+    "facing=east,result=0": {
+      "model": "signedsealed:block/id_reader",
+      "y": 90
+    },
+    "facing=east,result=1": {
+      "model": "signedsealed:block/id_reader_ok",
+      "y": 90
+    },
+    "facing=east,result=2": {
+      "model": "signedsealed:block/id_reader_deny",
+      "y": 90
+    },
+    "facing=south,result=0": {
+      "model": "signedsealed:block/id_reader",
+      "y": 180
+    },
+    "facing=south,result=1": {
+      "model": "signedsealed:block/id_reader_ok",
+      "y": 180
+    },
+    "facing=south,result=2": {
+      "model": "signedsealed:block/id_reader_deny",
+      "y": 180
+    },
+    "facing=west,result=0": {
+      "model": "signedsealed:block/id_reader",
+      "y": 270
+    },
+    "facing=west,result=1": {
+      "model": "signedsealed:block/id_reader_ok",
+      "y": 270
+    },
+    "facing=west,result=2": {
+      "model": "signedsealed:block/id_reader_deny",
+      "y": 270
+    }
+  }
+}

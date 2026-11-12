@@ -18,6 +18,8 @@ public final class Uploads {
    public static final int CHUNK = 30000;
    public static final int KIND_IMAGE = 0;
    public static final int KIND_LAYOUT = 1;
+   /** Logo for a document template (2.4.0). */
+   public static final int KIND_LOGO = 2;
    public static final int MAX_IMAGE = 640000;
    public static final int MAX_LAYOUT = 960000;
    private static final int MAX_PENDING = 6;
@@ -42,7 +44,7 @@ public final class Uploads {
    }
 
    public static int maxParts(int kind) {
-      return ((kind == KIND_IMAGE ? MAX_IMAGE : MAX_LAYOUT) + CHUNK - 1) / CHUNK;
+      return ((kind == KIND_IMAGE || kind == KIND_LOGO ? MAX_IMAGE : MAX_LAYOUT) + CHUNK - 1) / CHUNK;
    }
 
    private static void expire(Map<Integer, Buf> m) {
@@ -57,7 +59,7 @@ public final class Uploads {
    }
 
    public static void chunk(ServerPlayer sp, int token, int kind, int index, int total, byte[] data) {
-      if (kind != KIND_IMAGE && kind != KIND_LAYOUT) {
+      if (kind != KIND_IMAGE && kind != KIND_LAYOUT && kind != KIND_LOGO) {
          return;
       }
 
@@ -97,6 +99,8 @@ public final class Uploads {
          byte[] all = out.toByteArray();
          if (kind == KIND_IMAGE) {
             PaperService.acceptImage(sp, token, all);
+         } else if (kind == KIND_LOGO) {
+            TemplateService.acceptLogo(sp, token, all);
          } else {
             Map<Integer, byte[]> l = LAYOUTS.computeIfAbsent(sp.getUUID(), k -> new HashMap<>());
             if (l.size() > 4) {

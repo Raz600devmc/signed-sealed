@@ -69,7 +69,13 @@ public final class InspectScreen extends Screen {
          }
 
          String hint = L.t("Мышь — вращать · Колесо — приблизить · Пробел/ПКМ — открыть/перевернуть · Enter — просмотр · Esc — убрать");
-         g.drawCenteredString(this.font, Ui.ellipsize(this.font, hint, this.width - 20), this.width / 2, this.height - 16, -3555408);
+         String shown = Ui.ellipsize(this.font, hint, this.width - 20);
+         int hw = this.font.width(shown);
+         g.pose().pushPose();
+         g.pose().translate(0.0F, 0.0F, 1000.0F);
+         g.fill(this.width / 2 - hw / 2 - 6, 3, this.width / 2 + hw / 2 + 6, 19, -1342177280);
+         g.drawCenteredString(this.font, shown, this.width / 2, 7, -3555408);
+         g.pose().popPose();
       }
    }
 

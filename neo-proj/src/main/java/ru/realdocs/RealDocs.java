@@ -28,6 +28,7 @@ public class RealDocs {
             .displayItems((params, output) -> {
                output.accept((ItemLike)ModItems.DOCUMENT.get());
                output.accept((ItemLike)ModItems.NEWSPAPER.get());
+               output.accept((ItemLike)ModItems.NOTICE_BOARD.get());
                output.accept((ItemLike)ModItems.ENVELOPE.get());
                output.accept((ItemLike)ModItems.SEALING_WAX.get());
                output.accept((ItemLike)ModItems.FOLDER.get());
@@ -36,6 +37,7 @@ public class RealDocs {
                output.accept((ItemLike)ModBlocks.SHREDDER_ITEM.get());
                output.accept((ItemLike)ModBlocks.MAILBOX_ITEM.get());
                output.accept((ItemLike)ModBlocks.TICKET_GATE_ITEM.get());
+               output.accept((ItemLike)ModBlocks.ID_READER_ITEM.get());
                output.accept((ItemLike)ModBlocks.ARCHIVE_SHELF_ITEM.get());
                output.accept((ItemLike)ModBlocks.FILING_CABINET_ITEM.get());
                output.accept((ItemLike)ModBlocks.SCANNER_ITEM.get());
@@ -56,5 +58,7 @@ public class RealDocs {
       NeoForge.EVENT_BUS.register(RdCommand.class);
       NeoForge.EVENT_BUS.register(AdminService.class);
       NeoForge.EVENT_BUS.register(MailService.class);
+      NeoForge.EVENT_BUS.register(ru.realdocs.server.BureauService.class);
+      NeoForge.EVENT_BUS.register(ru.realdocs.command.OfficeCommand.class);
    }
 }

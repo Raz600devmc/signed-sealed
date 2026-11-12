@@ -17,7 +17,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 public final class Net {
-   private static final String PROTOCOL = "8";
+   private static final String PROTOCOL = "10";
    private static final Map<Class<?>, Type<Net.Wrap>> TYPES = new HashMap<>();
 
    private Net() {
@@ -67,6 +67,8 @@ public final class Net {
       toClient(r, ArchivePackets.ViewItem.class, ArchivePackets.ViewItem::decode);
       toClient(r, ArchivePackets.OpenConfig.class, ArchivePackets.OpenConfig::decode);
       toClient(r, ArchivePackets.ComputerData.class, ArchivePackets.ComputerData::decode);
+      toServer(r, OfficePackets.Req.class, OfficePackets.Req::decode);
+      toClient(r, OfficePackets.Data.class, OfficePackets.Data::decode);
    }
 
    private static <T extends Packets.Packet> Type<Net.Wrap> type(Class<T> cls) {

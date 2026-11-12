@@ -124,6 +124,13 @@ public final class DocService {
             d.position = clean(in.position, 60, false);
             d.subject = clean(in.subject, 140, false);
             d.body = clean(in.body, 2400, true);
+            String rerr = RegistryService.prepare(sp, cur, in, d);
+            if (rerr != null) {
+               err(sp, rerr);
+               NbtCodec.writeDoc(stack, d);
+               return;
+            }
+
             if (!issue) {
                NbtCodec.writeDoc(stack, d);
             } else if (!Perms.has(sp, Perms.SIGN)) {
@@ -143,6 +150,20 @@ public final class DocService {
                d.authorUuid = sp.getUUID().toString();
                DocStore store0 = DocStore.get(sp.server);
                d.sec = store0.secCode(d.docId);
+               String serr = RegistryService.checkSupersede(sp, d);
+               if (serr != null) {
+                  err(sp, serr);
+                  d.issued = false;
+                  d.docId = "";
+                  d.date = "";
+                  d.author = "";
+                  d.authorUuid = "";
+                  d.sec = "";
+                  NbtCodec.writeDoc(stack, d);
+                  return;
+               }
+
+               d.regNo = RegistryService.assign(sp.server, d);
                DocModel.Sig s = new DocModel.Sig();
                s.name = name;
                s.uuid = d.authorUuid;
@@ -161,7 +182,9 @@ public final class DocService {
                store.docs.put(d.docId, r);
                store.setDirty();
                NbtCodec.writeDoc(stack, d);
-               ok(sp, L.k(d.templateName()) + (d.number.isEmpty() ? "" : " № " + d.number) + L.k(" выпущен и подписан."));
+               RegistryService.supersede(sp.server, d);
+               RegistryService.snapshot(sp.server, d);
+               ok(sp, L.k(d.templateName()) + (d.number.isEmpty() ? "" : " № " + d.number) + L.k(" выпущен и подписан.") + L.k(" Рег. № ") + d.regNo);
                LOG.info("[Signed & Sealed] {} выпустил документ {} ({} №{})", new Object[]{name, d.docId, d.templateName(), d.number});
             }
          }
@@ -171,40 +194,51 @@ public final class DocService {
    public static void coSign(ServerPlayer sp, InteractionHand hand, String position, int[] sig) {
       ItemStack stack = sp.getItemInHand(hand);
       if (stack.getItem() instanceof DocumentItem) {
-         if (!Perms.has(sp, Perms.SIGN)) {
-            err(sp, L.k("У вас нет права подписывать документы."));
+         DocStore store = DocStore.get(sp.server);
+         DocModel d = NbtCodec.readDoc(stack);
+         String e = addSignature(sp, store, d, position, sig);
+         if (e != null) {
+            err(sp, e);
          } else {
-            DocStore store = DocStore.get(sp.server);
-            DocModel d = NbtCodec.readDoc(stack);
-            DocService.VerifyResult vr = check(store, d, false);
-            if (vr.status() != DocService.Status.OK) {
-               err(sp, L.k("Подпись невозможна: документ не прошёл проверку подлинности."));
+            NbtCodec.writeDoc(stack, d);
+            ok(sp, L.k("Ваша подпись добавлена к документу."));
+         }
+      }
+   }
+
+   /** Adds the player's signature to an issued document and updates the registry. Returns an error or null. */
+   static String addSignature(ServerPlayer sp, DocStore store, DocModel d, String position, int[] sig) {
+      if (!Perms.has(sp, Perms.SIGN)) {
+         return L.k("У вас нет права подписывать документы.");
+      } else {
+         DocService.VerifyResult vr = check(store, d, false);
+         if (vr.status() != DocService.Status.OK || d.copy) {
+            return L.k("Подпись невозможна: документ не прошёл проверку подлинности.");
+         } else {
+            String uuid = sp.getUUID().toString();
+            if (d.hasAuthorizedSignature(uuid)) {
+               return L.k("Вы уже подписали этот документ.");
+            } else if (d.sigs.size() >= 4) {
+               return L.k("На документе уже максимум подписей (") + "4).";
             } else {
-               String uuid = sp.getUUID().toString();
-               if (d.hasAuthorizedSignature(uuid)) {
-                  err(sp, L.k("Вы уже подписали этот документ."));
-               } else if (d.sigs.size() >= 4) {
-                  err(sp, L.k("На документе уже максимум подписей (") + "4).");
+               String pos = clean(position, 60, false);
+               if (pos.isEmpty()) {
+                  return L.k("Укажите вашу должность.");
+               } else if (!validSignature(sig)) {
+                  return L.k("Нарисуйте подпись.");
                } else {
-                  String pos = clean(position, 60, false);
-                  if (pos.isEmpty()) {
-                     err(sp, L.k("Укажите вашу должность."));
-                  } else if (!validSignature(sig)) {
-                     err(sp, L.k("Нарисуйте подпись."));
-                  } else {
-                     DocModel.Sig s = new DocModel.Sig();
-                     s.name = sp.getGameProfile().getName();
-                     s.uuid = uuid;
-                     s.position = pos;
-                     s.strokes = (int[])sig.clone();
-                     d.sigs.add(s);
-                     DocStore.Rec r = store.docs.get(d.docId);
-                     r.rehash(store.hmac(d.canonical()));
-                     store.setDirty();
-                     NbtCodec.writeDoc(stack, d);
-                     ok(sp, L.k("Ваша подпись добавлена к документу."));
-                     LOG.info("[Signed & Sealed] {} подписал документ {}", s.name, d.docId);
-                  }
+                  DocModel.Sig s = new DocModel.Sig();
+                  s.name = sp.getGameProfile().getName();
+                  s.uuid = uuid;
+                  s.position = pos;
+                  s.strokes = (int[])sig.clone();
+                  d.sigs.add(s);
+                  DocStore.Rec r = store.docs.get(d.docId);
+                  r.rehash(store.hmac(d.canonical()));
+                  store.setDirty();
+                  RegistryService.snapshot(sp.server, d);
+                  LOG.info("[Signed & Sealed] {} подписал документ {}", s.name, d.docId);
+                  return null;
                }
             }
          }
@@ -337,6 +371,7 @@ public final class DocService {
          d.stamps.add(ref);
          DocStore.Rec r = store.docs.get(d.docId);
          r.rehash(store.hmac(d.canonical()));
+         RegistryService.snapshot(sp.server, d);
          store.setDirty();
          NbtCodec.writeDoc(docStack, d);
          return true;
@@ -344,9 +379,13 @@ public final class DocService {
    }
 
    public static DocService.VerifyResult verify(MinecraftServer server, ItemStack stack) {
-      return !(stack.getItem() instanceof DocumentItem)
-         ? new DocService.VerifyResult(DocService.Status.NOT_DOC, List.of(L.k("Это не документ.")))
-         : check(DocStore.get(server), NbtCodec.readDoc(stack), true);
+      if (!(stack.getItem() instanceof DocumentItem)) {
+         return new DocService.VerifyResult(DocService.Status.NOT_DOC, List.of(L.k("Это не документ.")));
+      } else {
+         DocModel d = NbtCodec.readDoc(stack);
+         DocService.VerifyResult vr = check(DocStore.get(server), d, true);
+         return RegistryService.annotate(server, d, vr);
+      }
    }
 
    static DocService.VerifyResult check(DocStore store, DocModel d, boolean detailed) {

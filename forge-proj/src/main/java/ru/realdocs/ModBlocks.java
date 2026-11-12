@@ -30,11 +30,13 @@ public final class ModBlocks {
    public static final RegistryObject<Block> FILING_CABINET = BLOCKS.register(
       "filing_cabinet", () -> new ArchiveBlock(office(), 48, 1.0, 0.0, 1.0, 15.0, 16.0, 15.0)
    );
+   public static final RegistryObject<Block> ID_READER = BLOCKS.register("id_reader", () -> new ru.realdocs.block.ReaderBlock(office()));
    public static final RegistryObject<Block> SCANNER = BLOCKS.register("scanner", () -> new TerminalBlock(office(), true, 1.0, 0.0, 2.0, 15.0, 5.0, 14.0));
    public static final RegistryObject<Block> COMPUTER = BLOCKS.register("computer", () -> new TerminalBlock(office(), false, 0.5, 0.0, 0.5, 15.5, 14.0, 15.5));
    public static final RegistryObject<Item> TICKET_GATE_ITEM = ModItems.ITEMS.register("ticket_gate", () -> new BlockItem((Block)TICKET_GATE.get(), new Properties()));
    public static final RegistryObject<Item> ARCHIVE_SHELF_ITEM = ModItems.ITEMS.register("archive_shelf", () -> new BlockItem((Block)ARCHIVE_SHELF.get(), new Properties()));
    public static final RegistryObject<Item> FILING_CABINET_ITEM = ModItems.ITEMS.register("filing_cabinet", () -> new BlockItem((Block)FILING_CABINET.get(), new Properties()));
+   public static final RegistryObject<Item> ID_READER_ITEM = ModItems.ITEMS.register("id_reader", () -> new BlockItem((Block)ID_READER.get(), new Properties()));
    public static final RegistryObject<Item> SCANNER_ITEM = ModItems.ITEMS.register("scanner", () -> new BlockItem((Block)SCANNER.get(), new Properties()));
    public static final RegistryObject<Item> COMPUTER_ITEM = ModItems.ITEMS.register("computer", () -> new BlockItem((Block)COMPUTER.get(), new Properties()));
    public static final RegistryObject<Item> PRINTER_ITEM = ModItems.ITEMS.register("printer", () -> new BlockItem((Block)PRINTER.get(), new Properties()));

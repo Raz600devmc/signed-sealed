@@ -4,10 +4,10 @@ license="MIT"
 
 [[mods]]
 modId="signedsealed"
-version="2.3.0"
+version="2.5.0"
 displayName="Signed & Sealed"
 authors="Raz600"
-description='''Documents, stamps, signatures and passports for roleplay servers: ID cards, tickets and fines, stamp and visa designers, hand-drawn signatures, forgeries that the registry catches, printer and shredder, security marks and authenticity checks, PNG/PDF export. New in 2.2: newspapers, leaflets and posters with a full layout editor and 11 bundled fonts, letters sealed with wax, mailboxes and document folders. New in 2.3: leaflets and posters hung straight on walls, ticket gates that punch tickets and give a redstone signal, archive shelves and filing cabinets you can browse without taking documents out, scanners and computers for a searchable digital archive. All documents are in-game only.'''
+description='''Documents, stamps, signatures and passports for roleplay servers: ID cards, tickets and fines, stamp and visa designers, hand-drawn signatures, forgeries that the registry catches, printer and shredder, security marks and authenticity checks, PNG/PDF export. New in 2.2: newspapers, leaflets and posters with a full layout editor and 11 bundled fonts, letters sealed with wax, mailboxes and document folders. New in 2.3: leaflets and posters hung straight on walls, ticket gates that punch tickets and give a redstone signal, archive shelves and filing cabinets you can browse without taking documents out, scanners and computers for a searchable digital archive. New in 2.4: player name autocomplete, mailing lists and newspaper subscriptions, organizations, custom document templates, remote signature requests, delivery receipts and registry numbers with document references. New in 2.5: document readers with redstone output, temporary passes with expiry and zones, a registry search, computer inbox and a brand-new computer desktop, notice boards. All documents are in-game only.'''
 
 [[dependencies.signedsealed]]
     modId="neoforge"

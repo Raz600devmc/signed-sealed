@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class DocModel {
-   public static final String[] TEMPLATE_TITLES = new String[]{"ПОСТАНОВЛЕНИЕ", "ПРИКАЗ", "СПРАВКА", "ДОГОВОР"};
-   public static final String[] TEMPLATE_NAMES = new String[]{"Постановление", "Приказ", "Справка", "Договор"};
+   public static final String[] TEMPLATE_TITLES = new String[]{"ПОСТАНОВЛЕНИЕ", "ПРИКАЗ", "СПРАВКА", "ДОГОВОР", "ПРОПУСК"};
+   public static final String[] TEMPLATE_NAMES = new String[]{"Постановление", "Приказ", "Справка", "Договор", "Пропуск"};
+   public static final int TEMPLATE_PASS = 4;
    public int template;
    public String number = "";
    public String org = "";
@@ -22,6 +23,24 @@ public final class DocModel {
    public boolean copy;
    public final List<DocModel.Sig> sigs = new ArrayList<>();
    public final List<DocModel.StampRef> stamps = new ArrayList<>();
+   /** Custom look and type name from a document template (2.4.0); null for the classic types. */
+   public DocDesign design;
+   /** Template the document was made from (informational only). */
+   public String templateId = "";
+   /** Registry number assigned when the document is issued, e.g. RD-000042. */
+   public String regNo = "";
+   /** Registry numbers this document refers to. */
+   public final List<String> refs = new ArrayList<>();
+   /** Registry numbers this document replaces: they lose force once it is issued. */
+   public final List<String> supersedes = new ArrayList<>();
+   /** Last day the document is valid (dd.MM.yyyy, real date); empty = no limit. */
+   public String expires = "";
+   /** Zones for readers, comma-separated (e.g. "Депо, Стройка-1"); empty = any reader without a zone. */
+   public String zones = "";
+   /** Who the document (a pass) was issued to; empty = bearer. */
+   public String holder = "";
+   /** Public documents show their details to anyone searching the registry. */
+   public boolean pub;
    public static final int[][] DEFAULT_SPOTS = new int[][]{{350, 880}, {770, 880}, {560, 915}, {250, 820}, {860, 820}, {560, 840}};
 
    public static DocModel.StampRef defaultPlacement(String id, int index) {
@@ -34,11 +53,105 @@ public final class DocModel {
    }
 
    public String title() {
-      return TEMPLATE_TITLES[templateIndex(this.template)];
+      return this.design != null && !this.design.title.isBlank() ? this.design.title : TEMPLATE_TITLES[templateIndex(this.template)];
    }
 
    public String templateName() {
-      return TEMPLATE_NAMES[templateIndex(this.template)];
+      return this.design != null && !this.design.name.isBlank() ? this.design.name : TEMPLATE_NAMES[templateIndex(this.template)];
+   }
+
+   public static String refsText(List<String> l) {
+      return String.join(", ", l);
+   }
+
+   /** Parses "RD-1, RD-000002 ..." into normalized registry numbers (at most six). */
+   public static List<String> parseRefs(String s) {
+      List<String> out = new ArrayList<>();
+      if (s == null) {
+         return out;
+      } else {
+         for (String part : s.split("[,;\\s]+")) {
+            String n = normRef(part);
+            if (!n.isEmpty() && !out.contains(n) && out.size() < 6) {
+               out.add(n);
+            }
+         }
+
+         return out;
+      }
+   }
+
+   public static String normRef(String s) {
+      if (s == null) {
+         return "";
+      } else {
+         String t = s.trim().toUpperCase(java.util.Locale.ROOT).replace("№", "").replace("РД", "RD");
+         if (t.startsWith("RD-")) {
+            t = t.substring(3);
+         } else if (t.startsWith("RD")) {
+            t = t.substring(2);
+         }
+
+         if (t.isEmpty() || t.length() > 9 || !t.chars().allMatch(Character::isDigit)) {
+            return "";
+         } else {
+            long v = Long.parseLong(t);
+            return v <= 0L ? "" : regFormat(v);
+         }
+      }
+   }
+
+   private static final java.time.format.DateTimeFormatter DMY = java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy");
+
+   /** Parses dd.MM.yyyy (also d.M.yyyy); null if it is not a date. */
+   public static java.time.LocalDate parseDate(String s) {
+      if (s == null) {
+         return null;
+      } else {
+         String[] p = s.trim().split("[./-]");
+         if (p.length != 3) {
+            return null;
+         } else {
+            try {
+               int d = Integer.parseInt(p[0]);
+               int m = Integer.parseInt(p[1]);
+               int y = Integer.parseInt(p[2]);
+               if (y < 100) {
+                  y += 2000;
+               }
+
+               return java.time.LocalDate.of(y, m, d);
+            } catch (RuntimeException var5) {
+               return null;
+            }
+         }
+      }
+   }
+
+   public static String formatDate(java.time.LocalDate d) {
+      return d.format(DMY);
+   }
+
+   /** True when the document has a validity date and it has passed. */
+   public boolean expired() {
+      java.time.LocalDate d = parseDate(this.expires);
+      return d != null && java.time.LocalDate.now().isAfter(d);
+   }
+
+   public List<String> zoneList() {
+      List<String> out = new ArrayList<>();
+
+      for (String z : this.zones.split(",")) {
+         if (!z.isBlank()) {
+            out.add(z.trim());
+         }
+      }
+
+      return out;
+   }
+
+   public static String regFormat(long v) {
+      return String.format(java.util.Locale.ROOT, "RD-%06d", v);
    }
 
    public boolean hasAuthorizedSignature(String uuid) {
@@ -94,6 +207,38 @@ public final class DocModel {
 
       if (this.copy) {
          f(sb, "COPY");
+      }
+
+      if (this.design != null) {
+         f(sb, "DS:" + this.design.canonical());
+      }
+
+      if (!this.regNo.isEmpty()) {
+         f(sb, "REG:" + this.regNo);
+      }
+
+      if (!this.refs.isEmpty()) {
+         f(sb, "REF:" + String.join(",", this.refs));
+      }
+
+      if (!this.supersedes.isEmpty()) {
+         f(sb, "SUP:" + String.join(",", this.supersedes));
+      }
+
+      if (!this.expires.isEmpty()) {
+         f(sb, "EXP:" + this.expires);
+      }
+
+      if (!this.zones.isEmpty()) {
+         f(sb, "ZONE:" + this.zones);
+      }
+
+      if (!this.holder.isEmpty()) {
+         f(sb, "HOLD:" + this.holder);
+      }
+
+      if (this.pub) {
+         f(sb, "PUB");
       }
 
       return sb.toString();

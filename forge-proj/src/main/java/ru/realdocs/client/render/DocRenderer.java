@@ -19,6 +19,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import ru.realdocs.L;
+import ru.realdocs.client.PassportCache;
+import ru.realdocs.model.DocDesign;
 import ru.realdocs.model.DocModel;
 import ru.realdocs.model.SigStyle;
 import ru.realdocs.model.StampModel;
@@ -45,12 +47,20 @@ public final class DocRenderer {
       Graphics2D g = out.createGraphics();
       StampRenderer.hints(g);
       g.scale(k, k);
-      g.setColor(PAPER);
+      DocDesign ds = d.design;
+      Color ink = ds == null ? INK : new Color(ds.accentRgb());
+      g.setColor(ds == null ? PAPER : new Color(ds.paperRgb()));
       g.fillRect(0, 0, 620, 877);
       Paper.grain(g, 620.0, 877.0, (long)d.docId.hashCode() * 17L + (long)d.number.hashCode());
-      g.setColor(new Color(205, 196, 176));
-      g.setStroke(new BasicStroke(1.0F));
-      g.draw(new Double(20.0, 20.0, 580.0, 837.0));
+      BufferedImage logo = ds != null && !ds.logo.isEmpty() && ds.logoPos > 0 ? PassportCache.INSTANCE.image(ds.logo) : null;
+      if (logo != null && ds.logoPos == 3) {
+         Composite oc = g.getComposite();
+         g.setComposite(AlphaComposite.SrcOver.derive(0.09F));
+         drawFit(g, logo, 310.0, 470.0, 340.0, 340.0);
+         g.setComposite(oc);
+      }
+
+      drawBorder(g, ds == null ? 0 : ds.border, ink);
       if (!d.issued) {
          AffineTransform old = g.getTransform();
          g.translate(310.0, 438.5);
@@ -63,10 +73,30 @@ public final class DocRenderer {
          g.setTransform(old);
       }
 
-      double left = 50.0;
-      double right = 570.0;
-      double textW = 520.0;
       double y = 56.0;
+      if (logo != null && ds.logoPos == 1) {
+         drawFit(g, logo, 310.0, 70.0, 66.0, 50.0);
+         y = 100.0;
+      } else if (logo != null && ds.logoPos == 2) {
+         drawFit(g, logo, 82.0, 66.0, 56.0, 50.0);
+      }
+
+      if (ds != null) {
+         g.setColor(ink);
+         g.setFont(new Font("Serif", 0, 11));
+
+         for (String h : new String[]{ds.header1, ds.header2}) {
+            if (!h.isBlank()) {
+               y += 13.0;
+               drawCentered(g, ellipsize(g.getFontMetrics(), h.trim(), 430.0), 310.0, y);
+            }
+         }
+
+         if (!ds.header1.isBlank() || !ds.header2.isBlank()) {
+            y += 2.0;
+         }
+      }
+
       String org = d.org != null && !d.org.isBlank() ? d.org.trim() : "";
       if (org.isEmpty()) {
          g.setColor(new Color(150, 146, 136));
@@ -74,11 +104,11 @@ public final class DocRenderer {
          drawCentered(g, L.t("(организация не указана)"), 310.0, y + 14.0);
          y += 24.0;
       } else {
-         g.setColor(INK);
+         g.setColor(ink);
          Font f = new Font("Serif", 1, 16);
          g.setFont(f);
 
-         for (String ln : wrap(g.getFontMetrics(), org.toUpperCase(new Locale("ru", "RU")), 480.0, 2)) {
+         for (String ln : wrap(g.getFontMetrics(), org.toUpperCase(new Locale("ru", "RU")), 430.0, 2)) {
             y += 19.0;
             drawCentered(g, ln, 310.0, y);
          }
@@ -86,31 +116,59 @@ public final class DocRenderer {
          y += 6.0;
       }
 
-      g.setColor(INK);
+      g.setColor(ink);
       g.setStroke(new BasicStroke(1.2F));
       g.draw(new java.awt.geom.Line2D.Double(110.0, y, 510.0, y));
       y += 52.0;
-      Map<TextAttribute, Object> attrs = new HashMap<>();
-      attrs.put(TextAttribute.FAMILY, "Serif");
-      attrs.put(TextAttribute.WEIGHT, TextAttribute.WEIGHT_BOLD);
-      attrs.put(TextAttribute.SIZE, 25.0F);
-      attrs.put(TextAttribute.TRACKING, 0.14F);
-      g.setFont(Font.getFont(attrs));
-      g.setColor(INK);
-      drawCentered(g, L.t(d.title()), 310.0, y);
-      y += 34.0;
-      g.setFont(new Font("Serif", 0, 13));
-      String num = d.number != null && !d.number.isBlank() ? d.number.trim() : "____";
-      g.setColor(INK);
-      g.drawString("№ " + num, 50.0F, (float)y);
-      String date = d.date != null && !d.date.isBlank() ? L.t("от ") + d.date + L.t(" г.") : "";
-      if (date.isEmpty()) {
-         g.setColor(new Color(160, 156, 146));
-         date = L.t("от __.__.____ г.");
+      Font titleFont;
+      if (ds != null && ds.titleFont >= 0) {
+         titleFont = Fonts.tracked(Fonts.get(ds.titleFont, true, false, 25.0F), 0.1F);
+      } else {
+         Map<TextAttribute, Object> attrs = new HashMap<>();
+         attrs.put(TextAttribute.FAMILY, "Serif");
+         attrs.put(TextAttribute.WEIGHT, TextAttribute.WEIGHT_BOLD);
+         attrs.put(TextAttribute.SIZE, 25.0F);
+         attrs.put(TextAttribute.TRACKING, 0.14F);
+         titleFont = Font.getFont(attrs);
       }
 
-      FontMetrics fm13 = g.getFontMetrics();
-      g.drawString(date, (float)(570.0 - (double)fm13.stringWidth(date)), (float)y);
+      g.setFont(titleFont);
+      g.setColor(ink);
+      String title = L.t(d.title());
+      FontMetrics tfm = g.getFontMetrics();
+      if (tfm.stringWidth(title) > 520) {
+         g.setFont(titleFont.deriveFont(titleFont.getSize2D() * 520.0F / (float)tfm.stringWidth(title)));
+      }
+
+      if (ds != null && ds.titleLeft) {
+         g.drawString(title, 50.0F, (float)y);
+      } else {
+         drawCentered(g, title, 310.0, y);
+      }
+
+      y += 34.0;
+      g.setFont(new Font("Serif", 0, 13));
+      g.setColor(INK);
+      if (ds == null || !ds.hideNumber) {
+         String num = d.number != null && !d.number.isBlank() ? d.number.trim() : "____";
+         g.drawString("№ " + num, 50.0F, (float)y);
+      }
+
+      if (ds == null || !ds.hideDate) {
+         String date = d.date != null && !d.date.isBlank() ? L.t("от ") + d.date + L.t(" г.") : "";
+         if (date.isEmpty()) {
+            g.setColor(new Color(160, 156, 146));
+            date = L.t("от __.__.____ г.");
+         }
+
+         FontMetrics fm13 = g.getFontMetrics();
+         g.drawString(date, (float)(570.0 - (double)fm13.stringWidth(date)), (float)y);
+      }
+
+      if (ds != null && ds.hideNumber && ds.hideDate) {
+         y -= 14.0;
+      }
+
       y += 12.0;
       if (d.subject != null && !d.subject.isBlank()) {
          g.setColor(INK);
@@ -124,41 +182,61 @@ public final class DocRenderer {
          y += 4.0;
       }
 
+      if (!d.refs.isEmpty() || !d.supersedes.isEmpty()) {
+         g.setColor(GRAY);
+         g.setFont(new Font("Serif", 2, 10));
+         String rl = (d.refs.isEmpty() ? "" : L.t("Ссылается на: ") + String.join(", ", d.refs))
+            + (!d.refs.isEmpty() && !d.supersedes.isEmpty() ? "; " : "")
+            + (d.supersedes.isEmpty() ? "" : L.t("Отменяет: ") + String.join(", ", d.supersedes));
+         y += 14.0;
+         drawCentered(g, ellipsize(g.getFontMetrics(), rl, 500.0), 310.0, y);
+      }
+
+      if (!d.expires.isEmpty() || !d.holder.isEmpty() || !d.zones.isEmpty()) {
+         g.setColor(new Color(90, 84, 74));
+         g.setFont(new Font("Serif", 2, 10));
+         List<String> bits = new java.util.ArrayList<>();
+         if (!d.holder.isEmpty()) {
+            bits.add(L.t("Выдан: ") + d.holder);
+         }
+
+         if (!d.expires.isEmpty()) {
+            bits.add(L.t("Действует до ") + d.expires);
+         }
+
+         if (!d.zones.isEmpty()) {
+            bits.add(L.t("Зоны: ") + d.zones);
+         }
+
+         y += 14.0;
+         drawCentered(g, ellipsize(g.getFontMetrics(), String.join(" · ", bits), 500.0), 310.0, y);
+      }
+
       y += 14.0;
-      double bodyBottom = 700.0;
-      double lineH = 17.5;
+      boolean hasFooter = ds != null && !ds.footer.isBlank();
+      double bodyBottom = hasFooter ? 684.0 : 700.0;
       boolean overflow = false;
       g.setColor(INK);
-      Font bodyFont = new Font("Serif", 0, 13);
-      g.setFont(bodyFont);
-      FontMetrics fm = g.getFontMetrics();
+      Font bodyFont = ds != null && ds.bodyFont >= 0 ? Fonts.get(ds.bodyFont, false, false, 13.0F) : new Font("Serif", 0, 13);
+      int style = ds == null ? 0 : ds.bodyStyle;
       String body = d.body == null ? "" : d.body.replace("\r", "");
-      String[] paragraphs = body.split("\n", -1);
-
-      label133:
-      for (String para : paragraphs) {
-         if (para.isBlank()) {
-            y += 10.5;
-         } else {
-            List<String> lines = wrapIndented(fm, para.trim(), 520.0, 26.0);
-
-            for (int i = 0; i < lines.size(); i++) {
-               if (y + 17.5 > 700.0) {
-                  overflow = true;
-                  break label133;
-               }
-
-               y += 17.5;
-               double x = 50.0 + (double)(i == 0 ? 26 : 0);
-               g.drawString(lines.get(i), (float)x, (float)y);
-            }
-         }
+      y = drawBody(g, body, bodyFont, style, y, bodyBottom, ink);
+      if (y < 0.0) {
+         overflow = true;
       }
 
       if (overflow) {
          g.setColor(new Color(190, 40, 40));
          g.setFont(new Font("Serif", 1, 12));
-         g.drawString(L.t("… текст не помещается на страницу"), 50.0F, 712.0F);
+         g.drawString(L.t("… текст не помещается на страницу"), 50.0F, (float)(bodyBottom + 12.0));
+      }
+
+      if (hasFooter) {
+         g.setColor(ink);
+         g.setFont(new Font("Serif", 2, 10));
+         g.setStroke(new BasicStroke(0.6F));
+         g.draw(new java.awt.geom.Line2D.Double(160.0, 702.0, 460.0, 702.0));
+         drawCentered(g, ellipsize(g.getFontMetrics(), ds.footer.trim(), 500.0), 310.0, 715.0);
       }
 
       List<DocModel.Sig> sigs = d.sigs;
@@ -195,7 +273,10 @@ public final class DocRenderer {
       if (d.issued && d.docId != null && !d.docId.isEmpty()) {
          g.setColor(GRAY);
          g.setFont(new Font("Serif", 0, 8));
-         String foot = L.t("Документ ") + d.docId.substring(0, Math.min(8, d.docId.length())).toUpperCase() + L.t(" · подлинность проверяется на сервере");
+         String foot = L.t("Документ ")
+            + d.docId.substring(0, Math.min(8, d.docId.length())).toUpperCase()
+            + (d.regNo.isEmpty() ? "" : L.t(" · рег. № ") + d.regNo)
+            + L.t(" · подлинность проверяется на сервере");
          drawCentered(g, foot, 310.0, 851.0);
       }
 
@@ -205,7 +286,7 @@ public final class DocRenderer {
             g.setStroke(new BasicStroke(3.0F));
             g.draw(new java.awt.geom.Ellipse2D.Double(190.0, 318.5, 240.0, 240.0));
             g.setFont(new Font("Serif", 1, 30));
-            drawCentered(g, L.t(d.title()), 310.0, 448.5);
+            drawCentered(g, ellipsize(g.getFontMetrics(), L.t(d.title()), 560.0), 310.0, 448.5);
          });
       }
 
@@ -547,6 +628,166 @@ public final class DocRenderer {
       }
 
       return lines;
+   }
+
+   /** Body text with light markup: "# heading", "## subheading", "- item", "> quote", "^ centered", "---" rule, "**bold paragraph**". Returns the new y, or -1 if the text did not fit. */
+   static double drawBody(Graphics2D g, String body, Font base, int style, double y, double bottom, Color accent) {
+      double lineH = 17.5;
+
+      for (String raw : body.split("\n", -1)) {
+         String para = raw.strip();
+         Font f = base;
+         double indent = style == 0 ? 26.0 : 0.0;
+         double hang = 0.0;
+         boolean center = style == 2;
+         String bullet = null;
+         double gapBefore = 0.0;
+         Color col = INK;
+         if (para.isEmpty()) {
+            y += 10.5;
+            continue;
+         }
+
+         if (para.equals("---") || para.equals("***")) {
+            if (y + 12.0 > bottom) {
+               return -1.0;
+            }
+
+            g.setColor(accent);
+            g.setStroke(new BasicStroke(0.8F));
+            g.draw(new java.awt.geom.Line2D.Double(140.0, y + 7.0, 480.0, y + 7.0));
+            y += 14.0;
+            continue;
+         }
+
+         if (para.startsWith("## ")) {
+            para = para.substring(3).strip();
+            f = base.deriveFont(Font.BOLD, 13.5F);
+            indent = 0.0;
+            center = false;
+            gapBefore = 4.0;
+            col = accent;
+         } else if (para.startsWith("# ")) {
+            para = para.substring(2).strip();
+            f = base.deriveFont(Font.BOLD, 15.0F);
+            indent = 0.0;
+            center = true;
+            gapBefore = 6.0;
+            col = accent;
+         } else if (para.startsWith("- ") || para.startsWith("• ") || para.startsWith("* ")) {
+            para = para.substring(2).strip();
+            bullet = "•";
+            indent = 18.0;
+            hang = 18.0;
+            center = false;
+         } else if (para.startsWith("> ")) {
+            para = para.substring(2).strip();
+            f = base.deriveFont(Font.ITALIC);
+            indent = 30.0;
+            hang = 30.0;
+            center = false;
+         } else if (para.startsWith("^ ")) {
+            para = para.substring(2).strip();
+            indent = 0.0;
+            center = true;
+         }
+
+         if (para.length() > 4 && para.startsWith("**") && para.endsWith("**")) {
+            para = para.substring(2, para.length() - 2).strip();
+            f = f.deriveFont(f.getStyle() | Font.BOLD);
+         }
+
+         y += gapBefore;
+         g.setFont(f);
+         g.setColor(col);
+         FontMetrics fm = g.getFontMetrics();
+         List<String> lines = center ? wrap(fm, para, 520.0, 99) : wrapIndented(fm, para, 520.0 - hang, hang > 0.0 ? 0.0 : indent);
+
+         for (int i = 0; i < lines.size(); i++) {
+            if (y + lineH > bottom) {
+               return -1.0;
+            }
+
+            y += lineH;
+            String ln = lines.get(i);
+            if (center) {
+               drawCentered(g, ln, 310.0, y);
+            } else {
+               double x = 50.0 + (hang > 0.0 ? hang : (i == 0 ? indent : 0.0));
+               if (bullet != null && i == 0) {
+                  g.drawString(bullet, (float)(50.0 + 6.0), (float)y);
+               }
+
+               g.drawString(ln, (float)x, (float)y);
+            }
+         }
+      }
+
+      return y;
+   }
+
+   static void drawBorder(Graphics2D g, int border, Color ink) {
+      switch (border) {
+         case 1:
+            g.setColor(new Color(ink.getRed(), ink.getGreen(), ink.getBlue(), 150));
+            g.setStroke(new BasicStroke(1.6F));
+            g.draw(new Double(18.0, 18.0, 584.0, 841.0));
+            g.setStroke(new BasicStroke(0.7F));
+            g.draw(new Double(23.0, 23.0, 574.0, 831.0));
+            break;
+         case 2:
+            g.setColor(new Color(ink.getRed(), ink.getGreen(), ink.getBlue(), 170));
+            g.setStroke(new BasicStroke(1.0F));
+            g.draw(new Double(20.0, 20.0, 580.0, 837.0));
+            g.draw(new Double(26.0, 26.0, 568.0, 825.0));
+
+            for (int i = 0; i < 4; i++) {
+               double cx = i % 2 == 0 ? 26.0 : 594.0;
+               double cy = i < 2 ? 26.0 : 851.0;
+               g.fill(new java.awt.geom.Ellipse2D.Double(cx - 5.0, cy - 5.0, 10.0, 10.0));
+               g.draw(new java.awt.geom.Ellipse2D.Double(cx - 10.0, cy - 10.0, 20.0, 20.0));
+            }
+
+            g.setStroke(new BasicStroke(0.5F));
+
+            for (double x = 40.0; x < 582.0; x += 9.0) {
+               g.draw(new java.awt.geom.Line2D.Double(x, 23.0, x + 4.5, 20.0));
+               g.draw(new java.awt.geom.Line2D.Double(x, 854.0, x + 4.5, 857.0));
+            }
+            break;
+         case 3:
+            g.setColor(new Color(ink.getRed(), ink.getGreen(), ink.getBlue(), 200));
+            g.setStroke(new BasicStroke(5.0F));
+            g.draw(new Double(20.0, 20.0, 580.0, 837.0));
+            g.setStroke(new BasicStroke(0.8F));
+            g.draw(new Double(29.0, 29.0, 562.0, 819.0));
+            break;
+         case 4:
+            break;
+         default:
+            g.setColor(new Color(205, 196, 176));
+            g.setStroke(new BasicStroke(1.0F));
+            g.draw(new Double(20.0, 20.0, 580.0, 837.0));
+      }
+   }
+
+   static void drawFit(Graphics2D g, BufferedImage img, double cx, double cy, double maxW, double maxH) {
+      double sc = Math.min(maxW / (double)img.getWidth(), maxH / (double)img.getHeight());
+      int w = (int)Math.round((double)img.getWidth() * sc);
+      int h = (int)Math.round((double)img.getHeight() * sc);
+      g.drawImage(img, (int)Math.round(cx - (double)w / 2.0), (int)Math.round(cy - (double)h / 2.0), w, h, null);
+   }
+
+   static String ellipsize(FontMetrics fm, String s, double w) {
+      if ((double)fm.stringWidth(s) <= w) {
+         return s;
+      } else {
+         while (s.length() > 1 && (double)fm.stringWidth(s + "…") > w) {
+            s = s.substring(0, s.length() - 1);
+         }
+
+         return s + "…";
+      }
    }
 
    public static record Result(BufferedImage image, boolean overflow) {

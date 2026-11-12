@@ -25,6 +25,10 @@ public final class Perms {
    public static final PermissionNode<Boolean> NEWSPAPER = node("newspaper.publish", false);
    public static final PermissionNode<Boolean> MAIL = node("mail.send", false);
    public static final PermissionNode<Boolean> ARCHIVE = node("archive.scan", false);
+   /** Mail to everyone (@all), more recipients per letter, no pause between mailings. */
+   public static final PermissionNode<Boolean> MAIL_MASS = node("mail.mass", true);
+   public static final PermissionNode<Boolean> ORG_CREATE = node("org.create", false);
+   public static final PermissionNode<Boolean> TEMPLATE = node("document.template", false);
 
    private Perms() {
    }
@@ -41,7 +45,7 @@ public final class Perms {
 
    @SubscribeEvent
    public static void onGather(Nodes event) {
-      event.addNodes(new PermissionNode[]{CREATE, SIGN, VERIFY, APPLY, DESIGN, ISSUE, PASSPORT_ISSUE, PASSPORT_FILL, SHOW, ADMIN, FORGE, PRINT, NEWSPAPER, MAIL, ARCHIVE});
+      event.addNodes(new PermissionNode[]{CREATE, SIGN, VERIFY, APPLY, DESIGN, ISSUE, PASSPORT_ISSUE, PASSPORT_FILL, SHOW, ADMIN, FORGE, PRINT, NEWSPAPER, MAIL, ARCHIVE, MAIL_MASS, ORG_CREATE, TEMPLATE});
    }
 
    public static boolean has(ServerPlayer player, PermissionNode<Boolean> node) {

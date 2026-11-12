@@ -41,12 +41,13 @@ public final class BlockConfigScreen extends UiScreen {
 
    protected void init() {
       this.w0 = Math.min(320, this.width - 24);
-      this.h0 = this.gate() ? 262 : 210;
+      int noteH = this.gate() ? 0 : this.font.split(Component.literal(L.t("Сканер и компьютер с одной сетью работают с одним архивом.")), this.w0 - 24).size() * 10 + 6;
+      this.h0 = (this.gate() ? 262 : 210) + noteH;
       this.x0 = (this.width - this.w0) / 2;
       this.y0 = (this.height - this.h0) / 2;
       int x = this.x0 + 12;
       int w = this.w0 - 24;
-      int y = this.y0 + 40;
+      int y = this.y0 + 40 + noteH;
       UiField lf = this.field(x, y, w, this.gate() ? L.t("например, Станция «Центральная»") : L.t("например, Мэрия"), this.label, 40, s -> this.label = s);
       lf.label(this.gate() ? L.t("Название прохода") : L.t("Подпись на устройстве"));
       y += 36;
@@ -78,7 +79,7 @@ public final class BlockConfigScreen extends UiScreen {
          y += 26;
       }
 
-      UiField mf = this.field(x, y + 10, w, L.t("ники через запятую"), this.members, 600, s -> this.members = s);
+      UiField mf = this.nameField(x, y + 10, w, L.t("ники или @организация через запятую"), this.members, 600, s -> this.members = s, true, false);
       mf.label(L.t("Кому можно пользоваться, когда заперто"));
       y += 36;
       this.button(this.locked ? L.t("Заперто") : L.t("Открыто для всех"), x, y, w, 18, () -> {
@@ -104,7 +105,12 @@ public final class BlockConfigScreen extends UiScreen {
          g.drawString(this.font, p, x + 43 - this.font.width(p) / 2, y + 5, -1183755, false);
          g.drawString(this.font, L.t("Время прохода и сигнала"), x + 94, y + 5, -6253953, false);
       } else {
-         g.drawString(this.font, Ui.ellipsize(this.font, L.t("Сканер и компьютер с одной сетью работают с одним архивом."), this.w0 - 24), this.x0 + 12, this.y0 + 22, -9543342, false);
+         int ny = this.y0 + 26;
+
+         for (var line : this.font.split(Component.literal(L.t("Сканер и компьютер с одной сетью работают с одним архивом.")), this.w0 - 24)) {
+            g.drawString(this.font, line, this.x0 + 12, ny, -9543342, false);
+            ny += 10;
+         }
       }
 
       super.render(g, mx, my, pt);

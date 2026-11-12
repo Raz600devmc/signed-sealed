@@ -84,7 +84,7 @@ public final class FolderScreen extends UiScreen {
       UiField lf = this.field(x, y + 10, w - 76, L.t("например, Дело №12"), this.label, FolderModel.MAX_LABEL, s -> this.label = s);
       lf.label(L.t("Надпись на ярлыке"));
       this.button(L.t("Сохранить"), x + w - 72, y + 10, 72, 18, this::saveLabel);
-      y += 34;
+      y += 46;
       int n = FolderModel.COLOR_RGB.length;
       int sw = (w - 3 * (n - 1)) / n;
 
@@ -182,7 +182,7 @@ public final class FolderScreen extends UiScreen {
       Ui.card(g, this.font, this.cardX, 8, this.cardW, this.height - 16, L.t("Папка") + (this.label.isEmpty() ? "" : " «" + this.label + "»"));
       int x = this.cardX + 10;
       int w = this.cardW - 20;
-      Ui.label(g, this.font, L.t("Цвет обложки"), x + 1, 60);
+      Ui.label(g, this.font, L.t("Цвет обложки"), x + 1, 72);
       Ui.section(g, this.font, L.t("Содержимое") + " " + this.items.size() + "/" + FolderModel.MAX_ITEMS, x, this.listY - 12, w);
       if (this.items.isEmpty()) {
          g.drawString(this.font, L.t("Папка пуста."), x, this.listY + 4, -9543342, false);

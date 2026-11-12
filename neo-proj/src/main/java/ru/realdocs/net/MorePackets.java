@@ -236,7 +236,7 @@ public final class MorePackets {
          return new MailAction(
             (InteractionHand)b.readEnum(InteractionHand.class),
             b.readVarInt(),
-            b.readUtf(MailModel.MAX_NAME),
+            b.readUtf(MailModel.MAX_TO),
             b.readUtf(MailModel.MAX_NAME),
             b.readUtf(MailModel.MAX_TEXT),
             b.readUtf(24),
@@ -248,7 +248,7 @@ public final class MorePackets {
       public void encode(FriendlyByteBuf b) {
          b.writeEnum(this.hand);
          b.writeVarInt(this.action);
-         b.writeUtf(cut(this.to, MailModel.MAX_NAME), MailModel.MAX_NAME);
+         b.writeUtf(cut(this.to, MailModel.MAX_TO), MailModel.MAX_TO);
          b.writeUtf(cut(this.from, MailModel.MAX_NAME), MailModel.MAX_NAME);
          b.writeUtf(cut(this.text, MailModel.MAX_TEXT), MailModel.MAX_TEXT);
          b.writeUtf(cut(this.stamp, 24), 24);
@@ -306,7 +306,7 @@ public final class MorePackets {
       }
 
       public static OpenMailbox decode(FriendlyByteBuf b) {
-         return new OpenMailbox(b.readBlockPos(), b.readVarInt(), b.readBoolean(), b.readUtf(MailModel.MAX_NAME));
+         return new OpenMailbox(b.readBlockPos(), b.readVarInt(), b.readBoolean(), b.readUtf(MailModel.MAX_TO));
       }
 
       @Override
@@ -314,7 +314,7 @@ public final class MorePackets {
          b.writeBlockPos(this.pos);
          b.writeVarInt(this.waiting);
          b.writeBoolean(this.holdsLetter);
-         b.writeUtf(cut(this.to, MailModel.MAX_NAME), MailModel.MAX_NAME);
+         b.writeUtf(cut(this.to, MailModel.MAX_TO), MailModel.MAX_TO);
       }
 
       @Override

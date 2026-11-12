@@ -106,7 +106,17 @@ public final class ClientHooks {
          PassportCache.INSTANCE.forgetMissing(NbtCodec.readPass(tag).photo);
       }
 
-      Minecraft.getInstance().setScreen(new RemoteViewScreen(passport, tag, status, lines, from));
+      Minecraft mc0 = Minecraft.getInstance();
+      if (mc0.screen instanceof ru.realdocs.client.screen.ComputerScreen cs) {
+         if (!passport) {
+            cs.showDocument(tag, status, lines, from);
+            return;
+         }
+
+         ru.realdocs.client.ui.UiScreen.returnTo = cs;
+      }
+
+      mc0.setScreen(new RemoteViewScreen(passport, tag, status, lines, from));
    }
 
    public static void openNewspaper(InteractionHand hand) {
@@ -188,6 +198,10 @@ public final class ClientHooks {
    public static void viewItem(net.minecraft.nbt.CompoundTag tag) {
       Minecraft mc = Minecraft.getInstance();
       if (mc.level != null && mc.player != null) {
+         if (mc.screen instanceof ru.realdocs.client.screen.ComputerScreen cs) {
+            ru.realdocs.client.ui.UiScreen.returnTo = cs;
+         }
+
          ItemStack s = ru.realdocs.Plat.loadStack(tag, mc.level);
          if (s.getItem() instanceof ru.realdocs.item.NewspaperItem) {
             ru.realdocs.data.PaperCodec.Ref r = ru.realdocs.data.PaperCodec.ref(s);
@@ -202,6 +216,8 @@ public final class ClientHooks {
                mc.player.displayClientMessage(net.minecraft.network.chat.Component.literal(" • " + in.getHoverName().getString()).withStyle(net.minecraft.ChatFormatting.GRAY), false);
             }
          }
+
+         ru.realdocs.client.ui.UiScreen.returnTo = null;
       }
    }
 }

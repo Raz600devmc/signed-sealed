@@ -761,7 +761,7 @@ public final class PassportService {
    }
 
    static boolean canSeeAsset(ServerPlayer sp, DocStore store, String id, DocStore.AssetRec a) {
-      if (a.ownerUuid.equals(sp.getUUID().toString()) || "paper_pub".equals(a.kind)) {
+      if (a.ownerUuid.equals(sp.getUUID().toString()) || "paper_pub".equals(a.kind) || "doc_logo".equals(a.kind)) {
          return true;
       } else if ("paper".equals(a.kind)) {
          return false;

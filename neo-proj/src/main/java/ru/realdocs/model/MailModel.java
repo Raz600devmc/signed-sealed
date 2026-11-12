@@ -9,6 +9,8 @@ public final class MailModel {
    public static final int BROKEN = 2;
    public static final int MAX_TEXT = 1500;
    public static final int MAX_NAME = 40;
+   /** Address line: one name or several names and @lists separated by commas. */
+   public static final int MAX_TO = 200;
    public static final int MAX_ITEMS = 3;
    public static final String[] WAX_NAMES = new String[]{"Красный", "Бордовый", "Синий", "Зелёный", "Чёрный", "Золотой"};
    public static final int[] WAX_RGB = new int[]{0xB3261E, 0x6E1423, 0x1F3E8C, 0x2E6B35, 0x2A2626, 0xC9A13B};

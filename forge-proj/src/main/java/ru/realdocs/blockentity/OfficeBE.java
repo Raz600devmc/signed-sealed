@@ -14,6 +14,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import ru.realdocs.Perms;
+import ru.realdocs.server.OrgService;
 
 /** Common part of the mod's block entities: owner, a lock and the people allowed through it. */
 public abstract class OfficeBE extends BlockEntity {
@@ -28,7 +29,19 @@ public abstract class OfficeBE extends BlockEntity {
    }
 
    public boolean isOwner(ServerPlayer sp) {
-      return this.ownerUuid.isEmpty() || this.ownerUuid.equals(sp.getUUID().toString()) || Perms.has(sp, Perms.ADMIN);
+      if (this.ownerUuid.isEmpty() || this.ownerUuid.equals(sp.getUUID().toString()) || Perms.has(sp, Perms.ADMIN)) {
+         return true;
+      } else {
+         String me = sp.getUUID().toString();
+
+         for (String m : this.members) {
+            if (m.startsWith("@") && OrgService.manager(sp.server, m.substring(1), me)) {
+               return true;
+            }
+         }
+
+         return false;
+      }
    }
 
    public boolean canUse(ServerPlayer sp) {
@@ -38,7 +51,7 @@ public abstract class OfficeBE extends BlockEntity {
          String me = sp.getGameProfile().getName().toLowerCase(Locale.ROOT);
 
          for (String m : this.members) {
-            if (m.toLowerCase(Locale.ROOT).equals(me)) {
+            if (m.startsWith("@") ? OrgService.member(sp.server, m.substring(1), sp.getUUID().toString()) : m.toLowerCase(Locale.ROOT).equals(me)) {
                return true;
             }
          }
@@ -59,10 +72,18 @@ public abstract class OfficeBE extends BlockEntity {
    public void setMembers(String text) {
       this.members.clear();
 
-      for (String s : text.split("[,;\\s]+")) {
+      for (String s : text.split("[,;]+")) {
          String n = s.strip();
-         if (!n.isEmpty() && n.length() <= 16 && this.members.size() < 32 && !this.members.contains(n)) {
-            this.members.add(n);
+         if (n.startsWith("@")) {
+            if (n.length() > 1 && n.length() <= 41 && this.members.size() < 32 && !this.members.contains(n)) {
+               this.members.add(n);
+            }
+         } else {
+            for (String w : n.split("\\s+")) {
+               if (!w.isEmpty() && w.length() <= 16 && this.members.size() < 32 && !this.members.contains(w)) {
+                  this.members.add(w);
+               }
+            }
          }
       }
    }

@@ -117,6 +117,15 @@ public final class NewspaperScreen extends ViewerScreen {
          this.loupe = !this.loupe;
          this.rebuildWidgets();
       }).selected(this.loupe).hint("L");
+      if (this.ref.published) {
+         this.addBtn(L.t("Подписка: вкл/выкл"), () -> {
+            net.minecraft.nbt.CompoundTag t = new net.minecraft.nbt.CompoundTag();
+            t.putString("Name", this.ref.name);
+            t.putBoolean("Toggle", true);
+            ru.realdocs.client.ClientOffice.req("paper_sub", t);
+         });
+      }
+
       this.addBtn(L.t("Сохранить PDF"), this::exportPdf);
       this.addBtn(L.t("Сохранить страницу PNG"), this::exportPng);
       PaperModel m = this.model();

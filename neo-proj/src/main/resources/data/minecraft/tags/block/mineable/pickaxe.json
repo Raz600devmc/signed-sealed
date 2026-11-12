@@ -7,6 +7,7 @@
     "signedsealed:ticket_gate",
     "signedsealed:filing_cabinet",
     "signedsealed:scanner",
-    "signedsealed:computer"
+    "signedsealed:computer",
+    "signedsealed:id_reader"
   ]
 }

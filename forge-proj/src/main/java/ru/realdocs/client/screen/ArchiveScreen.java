@@ -96,33 +96,34 @@ public final class ArchiveScreen extends UiScreen {
       }
       this.listY = this.y0 + 56;
       int bottom = this.y0 + this.h0 - 34;
-      this.rows = Math.max(1, (bottom - this.listY) / 22);
+      this.rows = Math.max(1, (bottom - this.listY) / 26);
       this.scroll = Math.max(0, Math.min(this.scroll, Math.max(0, this.shown.size() - this.rows)));
 
       for (int r = 0; r < this.rows && this.scroll + r < this.shown.size(); r++) {
          int idx = this.shown.get(this.scroll + r);
-         int ry = this.listY + r * 22;
-         this.button(L.t("Открыть"), this.listX + this.listW - 112, ry + 2, 54, 16, () -> this.act(ArchiveService.VIEW, idx));
-         this.button(L.t("Достать"), this.listX + this.listW - 54, ry + 2, 54, 16, () -> this.act(ArchiveService.TAKE, idx));
+         int ry = this.listY + r * 26;
+         this.button(L.t("Открыть"), this.listX + this.listW - 112, ry + 4, 54, 16, () -> this.act(ArchiveService.VIEW, idx));
+         this.button(L.t("Достать"), this.listX + this.listW - 54, ry + 4, 54, 16, () -> this.act(ArchiveService.TAKE, idx));
       }
 
       int by = this.y0 + this.h0 - 28;
-      int bw = (this.listW - 4) / 2;
+      int avail = this.data.manage ? this.listW : this.listW - 74;
+      int bw = (avail - 4) / 2;
       this.button(L.t("Положить из руки"), this.listX, by, bw, 20, () -> this.act(ArchiveService.PUT, 0)).primary()
          .enabled(this.data.entries.size() < this.data.capacity);
-      this.button(L.t("Положить все документы"), this.listX + bw + 4, by, this.listW - bw - 4, 20, () -> this.act(ArchiveService.PUT_ALL, 0))
+      this.button(L.t("Положить все документы"), this.listX + bw + 4, by, avail - bw - 4, 20, () -> this.act(ArchiveService.PUT_ALL, 0))
          .enabled(this.data.entries.size() < this.data.capacity);
       if (this.data.manage) {
          int sx = this.x0 + this.w0 - 12 - side;
-         UiField lf = this.field(sx, this.y0 + 40, side, L.t("например, Отдел кадров"), this.label, 40, s -> this.label = s);
+         UiField lf = this.field(sx, this.y0 + 50, side, L.t("например, Отдел кадров"), this.label, 40, s -> this.label = s);
          lf.label(L.t("Надпись"));
-         UiField mf = this.field(sx, this.y0 + 76, side, L.t("ники через запятую"), this.members, 600, s -> this.members = s);
+         UiField mf = this.nameField(sx, this.y0 + 86, side, L.t("ники или @организация через запятую"), this.members, 600, s -> this.members = s, true, false);
          mf.label(L.t("Доступ к замку"));
-         this.button(this.locked ? L.t("Заперто") : L.t("Открыто для всех"), sx, this.y0 + 100, side, 18, () -> {
+         this.button(this.locked ? L.t("Заперто") : L.t("Открыто для всех"), sx, this.y0 + 110, side, 18, () -> {
             this.locked = !this.locked;
             this.rebuildWidgets();
          }).selected(this.locked);
-         this.button(L.t("Сохранить"), sx, this.y0 + 124, side, 18, () -> this.act(ArchiveService.SET, 0)).primary();
+         this.button(L.t("Сохранить"), sx, this.y0 + 134, side, 18, () -> this.act(ArchiveService.SET, 0)).primary();
       }
 
       this.button(L.t("Закрыть"), this.x0 + this.w0 - 74, by, 62, 20, this::onClose).ghost();
@@ -138,25 +139,25 @@ public final class ArchiveScreen extends UiScreen {
 
       for (int r = 0; r < this.rows && this.scroll + r < this.shown.size(); r++) {
          ArchivePackets.Entry e = this.data.entries.get(this.shown.get(this.scroll + r));
-         int ry = this.listY + r * 22;
+         int ry = this.listY + r * 26;
          if (r % 2 == 0) {
-            g.fill(this.listX, ry, this.listX + this.listW, ry + 20, 0x14FFFFFF);
+            g.fill(this.listX, ry, this.listX + this.listW, ry + 24, 0x14FFFFFF);
          }
 
          int tw = this.listW - 120;
          g.drawString(this.font, Ui.ellipsize(this.font, e.title, tw), this.listX + 4, ry + 2, -1183755, false);
-         g.drawString(this.font, Ui.ellipsize(this.font, e.meta, tw), this.listX + 4, ry + 11, -9543342, false);
+         g.drawString(this.font, Ui.ellipsize(this.font, e.meta, tw), this.listX + 4, ry + 13, -9543342, false);
       }
 
       if (this.shown.size() > this.rows) {
          String s = (this.scroll + 1) + "–" + Math.min(this.shown.size(), this.scroll + this.rows) + " / " + this.shown.size();
-         g.drawString(this.font, s, this.listX + this.listW - this.font.width(s), this.y0 + 18, -9543342, false);
+         g.drawString(this.font, s, this.x0 + this.w0 - 12 - this.font.width(s), this.y0 + 6, -9543342, false);
       }
 
       if (this.data.manage) {
          int sx = this.x0 + this.w0 - 12 - 170;
          Ui.section(g, this.font, L.t("Настройки"), sx, this.y0 + 26, 170);
-         g.drawString(this.font, L.t("Владелец: ") + this.data.owner, sx, this.y0 + 150, -9543342, false);
+         g.drawString(this.font, Ui.ellipsize(this.font, L.t("Владелец: ") + this.data.owner, 170), sx, this.y0 + 160, -9543342, false);
       }
 
       super.render(g, mx, my, pt);

@@ -24,9 +24,21 @@ public final class ModEntities {
    public static final Supplier<BlockEntityType<TerminalBE>> TERMINAL = BLOCK_ENTITIES.register(
       "terminal", () -> BlockEntityType.Builder.of(TerminalBE::new, new Block[]{ModBlocks.SCANNER.get(), ModBlocks.COMPUTER.get()}).build(null)
    );
+   public static final Supplier<BlockEntityType<ru.realdocs.blockentity.ReaderBE>> READER = BLOCK_ENTITIES.register(
+      "id_reader", () -> BlockEntityType.Builder.of(ru.realdocs.blockentity.ReaderBE::new, new Block[]{ModBlocks.ID_READER.get()}).build(null)
+   );
    public static final Supplier<EntityType<PosterEntity>> POSTER = ENTITIES.register(
       "poster",
       () -> EntityType.Builder.<PosterEntity>of(PosterEntity::new, MobCategory.MISC).sized(0.5F, 0.5F).clientTrackingRange(10).updateInterval(20).build("poster")
+   );
+
+   public static final Supplier<EntityType<ru.realdocs.entity.NoticeBoardEntity>> NOTICE_BOARD = ENTITIES.register(
+      "notice_board",
+      () -> EntityType.Builder.<ru.realdocs.entity.NoticeBoardEntity>of(ru.realdocs.entity.NoticeBoardEntity::new, MobCategory.MISC)
+            .sized(0.5F, 0.5F)
+            .clientTrackingRange(10)
+            .updateInterval(20)
+            .build("notice_board")
    );
 
    private ModEntities() {

@@ -866,7 +866,15 @@ public final class Packets {
          d.position = b.readUtf(60);
          d.subject = b.readUtf(140);
          d.body = b.readUtf(2400);
-         return new Packets.SaveDoc(hand, issue, d, Packets.readInts(b));
+         int[] sig = Packets.readInts(b);
+         d.templateId = b.readUtf(24);
+         d.refs.addAll(DocModel.parseRefs(b.readUtf(200)));
+         d.supersedes.addAll(DocModel.parseRefs(b.readUtf(200)));
+         d.expires = b.readUtf(12);
+         d.zones = b.readUtf(80);
+         d.holder = b.readUtf(40);
+         d.pub = b.readBoolean();
+         return new Packets.SaveDoc(hand, issue, d, sig);
       }
 
       @Override
@@ -880,6 +888,13 @@ public final class Packets {
          b.writeUtf(Packets.cut(this.doc.subject, 140), 140);
          b.writeUtf(Packets.cut(this.doc.body, 2400), 2400);
          Packets.writeInts(b, this.sig);
+         b.writeUtf(Packets.cut(this.doc.templateId, 24), 24);
+         b.writeUtf(Packets.cut(DocModel.refsText(this.doc.refs), 200), 200);
+         b.writeUtf(Packets.cut(DocModel.refsText(this.doc.supersedes), 200), 200);
+         b.writeUtf(Packets.cut(this.doc.expires, 12), 12);
+         b.writeUtf(Packets.cut(this.doc.zones, 80), 80);
+         b.writeUtf(Packets.cut(this.doc.holder, 40), 40);
+         b.writeBoolean(this.doc.pub);
       }
 
       @Override

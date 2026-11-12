@@ -12,7 +12,7 @@ import net.minecraftforge.network.NetworkEvent.Context;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public final class Net {
-   private static final String PROTOCOL = "8";
+   private static final String PROTOCOL = "10";
    public static final SimpleChannel CH = NetworkRegistry.newSimpleChannel(new ResourceLocation("signedsealed", "main"), () -> PROTOCOL, PROTOCOL::equals, PROTOCOL::equals);
    private static int nextId = 0;
 
@@ -62,6 +62,8 @@ public final class Net {
       toClient(ArchivePackets.ViewItem.class, ArchivePackets.ViewItem::decode);
       toClient(ArchivePackets.OpenConfig.class, ArchivePackets.OpenConfig::decode);
       toClient(ArchivePackets.ComputerData.class, ArchivePackets.ComputerData::decode);
+      toServer(OfficePackets.Req.class, OfficePackets.Req::decode);
+      toClient(OfficePackets.Data.class, OfficePackets.Data::decode);
    }
 
    private static <T extends Packets.Packet> void toServer(Class<T> cls, Function<FriendlyByteBuf, T> decoder) {

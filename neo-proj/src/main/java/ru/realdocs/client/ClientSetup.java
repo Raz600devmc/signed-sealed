@@ -89,6 +89,7 @@ public final class ClientSetup {
       @SubscribeEvent
       public static void onRenderers(net.neoforged.neoforge.client.event.EntityRenderersEvent.RegisterRenderers event) {
          event.registerEntityRenderer(ru.realdocs.ModEntities.POSTER.get(), ru.realdocs.client.render.world.PosterRenderer::new);
+         event.registerEntityRenderer(ru.realdocs.ModEntities.NOTICE_BOARD.get(), ru.realdocs.client.render.world.NoticeBoardRenderer::new);
          event.registerBlockEntityRenderer(ru.realdocs.ModEntities.ARCHIVE.get(), ru.realdocs.client.render.world.ShelfRenderer::new);
       }
 

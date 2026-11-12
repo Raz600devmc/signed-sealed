@@ -7,12 +7,30 @@ import net.minecraft.network.chat.Component;
 import ru.realdocs.L;
 
 public abstract class UiScreen extends Screen {
+   /** Screen to go back to when the next viewer closes (e.g. the computer that opened it). */
+   public static net.minecraft.client.gui.screens.Screen returnTo;
+
+   /** Captured from {@link #returnTo} when this screen was created. */
+   private net.minecraft.client.gui.screens.Screen back;
+
+   public void onClose() {
+      if (this.back != null && this.back != this) {
+         net.minecraft.client.gui.screens.Screen r = this.back;
+         this.back = null;
+         this.minecraft.setScreen(r);
+      } else {
+         super.onClose();
+      }
+   }
+
    private String toast = "";
    private int toastColor = -1183755;
    private long toastAt;
 
    protected UiScreen(Component title) {
       super(title);
+      this.back = returnTo;
+      returnTo = null;
    }
 
    protected UiButton button(String label, int x, int y, int w, int h, Runnable action) {
@@ -32,6 +50,18 @@ public abstract class UiScreen extends Screen {
       }
 
       return (UiField)this.addRenderableWidget(f);
+   }
+
+   /** Field with player name suggestions; {@code multi} for comma-separated lists, {@code targets} adds @lists. */
+   protected NameField nameField(int x, int y, int w, String hint, String value, int max, Consumer<String> onChange, boolean multi, boolean targets) {
+      NameField f = new NameField(this.font, x, y, w, 18, hint, multi, targets);
+      f.setMaxLength(max);
+      f.setValue(value == null ? "" : value);
+      if (onChange != null) {
+         f.setResponder(onChange);
+      }
+
+      return (NameField)this.addRenderableWidget(f);
    }
 
    public void toast(String text, int color) {

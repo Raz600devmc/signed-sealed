@@ -92,7 +92,7 @@ public final class StampDesignerScreen extends UiScreen {
       }
 
       boolean mark = this.m.kind != 0;
-      int fy = y + 10 + (this.m.kind == 2 ? 0 : 30) + 30 + 8;
+      int fy = y + 10 + (this.m.kind == 2 ? 0 : 30) + 30 + 13;
       this.org = this.edit(x, fy, w, L.t("Например, Мэрия Новограда"), this.vOrg, 60, L.t("Название (для списков)"));
       this.top = this.edit(
          x,

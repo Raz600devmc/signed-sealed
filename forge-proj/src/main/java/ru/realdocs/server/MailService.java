@@ -138,7 +138,7 @@ public final class MailService {
 
    private static void fill(ServerPlayer sp, MailModel m, String to, String from, String text, int font) {
       m.font = Math.max(0, Math.min(31, font));
-      m.to = DocService.clean(to, MailModel.MAX_NAME, false);
+      m.to = DocService.clean(to, MailModel.MAX_TO, false);
       m.from = DocService.clean(from, MailModel.MAX_NAME, false);
       if (m.from.isEmpty()) {
          m.from = sp.getGameProfile().getName();
@@ -196,7 +196,7 @@ public final class MailService {
          return;
       }
 
-      if (DocService.clean(to, MailModel.MAX_NAME, false).isEmpty()) {
+      if (DocService.clean(to, MailModel.MAX_TO, false).isEmpty()) {
          DocService.err(sp, L.k("Укажите получателя."));
          return;
       }
@@ -308,6 +308,7 @@ public final class MailService {
    public static void openMailbox(ServerPlayer sp, BlockPos pos) {
       ItemStack held = sp.getMainHandItem();
       String to = held.getItem() instanceof EnvelopeItem ? MailCodec.readMail(held).to : "";
+      BureauService.send(sp, "mailbox", ListService.mailboxData(sp));
       Net.sendTo(sp, new MorePackets.OpenMailbox(pos, waiting(sp.server, sp.getUUID().toString()), held.getItem() instanceof EnvelopeItem, to));
    }
 
@@ -327,54 +328,15 @@ public final class MailService {
          DocService.err(sp, L.k("Возьмите письмо в основную руку."));
       } else if (!Perms.has(sp, Perms.MAIL)) {
          DocService.err(sp, L.k("У вас нет права отправлять почту."));
+      } else if (MailCodec.readMail(held).to.isBlank()) {
+         DocService.err(sp, L.k("На конверте не указан получатель."));
       } else {
-         MailModel m = MailCodec.readMail(held);
-         if (m.to.isBlank()) {
-            DocService.err(sp, L.k("На конверте не указан получатель."));
-         } else {
-            MinecraftServer server = sp.server;
-            ServerPlayer online = server.getPlayerList().getPlayerByName(m.to);
-            String uuid;
-            String name;
-            if (online != null) {
-               uuid = online.getUUID().toString();
-               name = online.getGameProfile().getName();
-            } else {
-               Optional<GameProfile> gp = Plat.profile(server, m.to);
-               if (gp.isEmpty()) {
-                  DocService.err(sp, L.k("Игрок «") + m.to + L.k("» ни разу не заходил на сервер — письмо не отправлено."));
-                  return;
-               }
-
-               uuid = gp.get().getId().toString();
-               name = gp.get().getName();
-            }
-
-            DocStore store = DocStore.get(server);
-            List<CompoundTag> b = box(store, uuid);
-            if (b.size() >= MAX_BOX) {
-               DocService.err(sp, L.k("Почтовый ящик получателя переполнен."));
-            } else {
-               ItemStack one = held.split(1);
-               MailModel pm = MailCodec.readMail(one);
-               pm.postmark = LocalDate.now().format(DATE);
-               MailCodec.writeMail(one, pm);
-               CompoundTag entry = new CompoundTag();
-               entry.put("Item", Plat.saveStack(one, sp.level()));
-               entry.putString("From", m.from.isEmpty() ? sp.getGameProfile().getName() : m.from);
-               entry.putLong("Time", System.currentTimeMillis());
-               b.add(entry);
-               store.setDirty();
-               sp.level().playSound(null, sp.blockPosition(), (SoundEvent)ModSounds.PAPER.get(), SoundSource.BLOCKS, 0.9F, 0.9F);
-               DocService.ok(sp, L.k("Письмо отправлено: ") + name + ".");
-               if (online != null && online != sp) {
-                  notify(online, 1, entry.getString("From"));
-               }
-
-               LOG.info("[Signed & Sealed] {} отправил письмо игроку {}", sp.getGameProfile().getName(), name);
-            }
-         }
+         ListService.sendEnvelope(sp);
       }
+   }
+
+   static void notifyNew(ServerPlayer p, String from) {
+      notify(p, 1, from);
    }
 
    private static void notify(ServerPlayer p, int count, String from) {
@@ -398,6 +360,7 @@ public final class MailService {
             if (!s.isEmpty()) {
                PaperService.give(sp, s);
                n++;
+               ListService.collected(sp.server, e, sp.getGameProfile().getName());
             }
          }
 

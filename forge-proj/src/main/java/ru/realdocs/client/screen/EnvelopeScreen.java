@@ -133,10 +133,10 @@ public final class EnvelopeScreen extends UiScreen {
       int w = this.cardW - 20;
       int y = 38;
       if (this.editable()) {
-         UiField ft = this.field(x, y + 10, w, L.t("имя игрока"), this.to, MailModel.MAX_NAME, s -> {
+         UiField ft = this.nameField(x, y + 10, w, L.t("имя игрока, несколько через запятую или @список"), this.to, MailModel.MAX_TO, s -> {
             this.to = s;
             this.edited = true;
-         });
+         }, true, true);
          ft.label(L.t("Кому"));
          y += 32;
          UiField ff = this.field(x, y + 10, w, L.t("подпись отправителя"), this.from, MailModel.MAX_NAME, s -> {
@@ -145,7 +145,9 @@ public final class EnvelopeScreen extends UiScreen {
          });
          ff.label(L.t("От кого"));
          y += 32;
-         int th = Math.max(50, Math.min(100, this.height / 5));
+         int attachH = 12 + Math.max(12, this.attachments.size() * 18) + 4;
+         int sealTop = this.height - 28 - 24 - 22 - 34 - 15;
+         int th = Math.max(30, Math.min(100, sealTop - (y + 14 + 24 + attachH + 26)));
          UiTextArea ta = new UiTextArea(this.font, x, y, w, th, L.t("текст письма…"));
          ta.setCharacterLimit(MailModel.MAX_TEXT);
          ta.setValue(this.text);
@@ -155,7 +157,7 @@ public final class EnvelopeScreen extends UiScreen {
             this.texKey = Integer.MIN_VALUE;
          });
          this.addRenderableWidget(ta);
-         y += th + 4;
+         y += th + 14;
          this.button("◀", x, y, 18, 18, () -> this.cycleFont(-1));
          this.button(L.t("Почерк: ") + L.t(Fonts.NAMES[this.letterFont]), x + 21, y, w - 42, 18, () -> this.cycleFont(1));
          this.button("▶", x + w - 18, y, 18, 18, () -> this.cycleFont(1));

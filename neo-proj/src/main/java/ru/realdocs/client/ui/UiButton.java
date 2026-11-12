@@ -73,6 +73,11 @@ public class UiButton extends Button {
 
    protected void renderWidget(GuiGraphics g, int mx, int my, float pt) {
       Font font = Minecraft.getInstance().font;
+      if (this.style == UiButton.Style.CLASSIC) {
+         this.renderClassic(g, font, mx, my);
+         return;
+      }
+
       boolean hov = this.active && this.isHoveredOrFocused();
       this.hover = this.hover + ((hov ? 1.0F : 0.0F) - this.hover) * 0.35F;
       int bg;
@@ -156,10 +161,54 @@ public class UiButton extends Button {
       }
    }
 
+   public UiButton classic() {
+      return this.style(UiButton.Style.CLASSIC);
+   }
+
+   /** Grey bevelled button of the in-game computer. */
+   private void renderClassic(GuiGraphics g, Font font, int mx, int my) {
+      int x = this.getX();
+      int y = this.getY();
+      int w = this.width;
+      int h = this.height;
+      boolean down = this.selected || this.active && this.isHovered() && org.lwjgl.glfw.GLFW.glfwGetMouseButton(Minecraft.getInstance().getWindow().getWindow(), 0) == 1;
+      g.fill(x, y, x + w, y + h, down ? -3092272 : -2830136);
+      int lt = down ? -8355712 : -1;
+      int rb = down ? -1 : -8355712;
+      g.fill(x, y, x + w, y + 1, lt);
+      g.fill(x, y, x + 1, y + h, lt);
+      g.fill(x, y + h - 1, x + w, y + h, -14671840);
+      g.fill(x + w - 1, y, x + w, y + h, -14671840);
+      g.fill(x + 1, y + h - 2, x + w - 1, y + h - 1, rb);
+      g.fill(x + w - 2, y + 1, x + w - 1, y + h - 1, rb);
+      if (this.isFocused() && this.active) {
+         Ui.outline(g, x + 3, y + 3, w - 6, h - 6, -8355712);
+      }
+
+      String s = this.getMessage().getString();
+      int left = this.swatch >= 0 ? 14 : 0;
+      s = Ui.ellipsize(font, s, w - 8 - left);
+      int tw = font.width(s) + left;
+      int tx = x + (w - tw) / 2 + (down ? 1 : 0);
+      int ty = y + (h - 8) / 2 + (down ? 1 : 0);
+      if (this.swatch >= 0) {
+         g.fill(tx, ty - 1, tx + 10, ty + 9, -16777216);
+         g.fill(tx + 1, ty, tx + 9, ty + 8, 0xFF000000 | this.swatch);
+      }
+
+      if (!this.active) {
+         g.drawString(font, s, tx + left + 1, ty + 1, -1, false);
+         g.drawString(font, s, tx + left, ty, -8355712, false);
+      } else {
+         g.drawString(font, s, tx + left, ty, this.style == UiButton.Style.CLASSIC ? -16777216 : -1, false);
+      }
+   }
+
    public static enum Style {
       NORMAL,
       PRIMARY,
       DANGER,
-      GHOST;
+      GHOST,
+      CLASSIC;
    }
 }

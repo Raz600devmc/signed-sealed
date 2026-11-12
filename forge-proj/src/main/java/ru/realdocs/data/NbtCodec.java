@@ -6,6 +6,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.item.ItemStack;
 import ru.realdocs.model.DesignElement;
+import ru.realdocs.model.DocDesign;
 import ru.realdocs.model.DocModel;
 import ru.realdocs.model.PassportModel;
 import ru.realdocs.model.PassportTemplate;
@@ -65,6 +66,18 @@ public final class NbtCodec {
          d.stamps.add(readRef(s));
       }
 
+      if (t.contains("Design")) {
+         d.design = DocDesign.read(t.getCompound("Design"));
+      }
+
+      d.templateId = t.getString("TplId");
+      d.regNo = t.getString("RegNo");
+      readList(t, "Refs", d.refs);
+      readList(t, "Supersedes", d.supersedes);
+      d.expires = t.getString("Expires");
+      d.zones = t.getString("Zones");
+      d.holder = t.getString("Holder");
+      d.pub = t.getBoolean("Public");
       return d;
    }
 
@@ -112,7 +125,57 @@ public final class NbtCodec {
       }
 
       t.put("Stamps", stamps);
+      if (d.design != null) {
+         t.put("Design", d.design.write());
+      }
+
+      if (!d.templateId.isEmpty()) {
+         t.putString("TplId", d.templateId);
+      }
+
+      if (!d.regNo.isEmpty()) {
+         t.putString("RegNo", d.regNo);
+      }
+
+      writeList(t, "Refs", d.refs);
+      writeList(t, "Supersedes", d.supersedes);
+      if (!d.expires.isEmpty()) {
+         t.putString("Expires", d.expires);
+      }
+
+      if (!d.zones.isEmpty()) {
+         t.putString("Zones", d.zones);
+      }
+
+      if (!d.holder.isEmpty()) {
+         t.putString("Holder", d.holder);
+      }
+
+      if (d.pub) {
+         t.putBoolean("Public", true);
+      }
+
       return t;
+   }
+
+   static void readList(CompoundTag t, String key, java.util.List<String> into) {
+      ListTag l = t.getList(key, 8);
+
+      for (int i = 0; i < l.size() && i < 6; i++) {
+         into.add(l.getString(i));
+      }
+   }
+
+   static void writeList(CompoundTag t, String key, java.util.List<String> from) {
+      if (!from.isEmpty()) {
+         ListTag l = new ListTag();
+
+         for (String s : from) {
+            l.add(net.minecraft.nbt.StringTag.valueOf(s));
+         }
+
+         t.put(key, l);
+      }
    }
 
    public static CompoundTag writeRef(DocModel.StampRef r) {
