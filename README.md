@@ -2,6 +2,10 @@
 
 In-game documents, stamps, hand-drawn signatures, and passports with visas, border stamps, security marks, and authenticity checks for roleplay servers.
 
+## 📖 Guide / Руководство
+- 🇬🇧 **[Complete player & admin guide](docs/en/README.md)**
+- 🇷🇺 **[Полное руководство для игроков и админов](docs/ru/README.md)**
+
 ## Features
 - Passports, ID cards, tickets, and fines.
 - Newspapers with a full layout editor.
