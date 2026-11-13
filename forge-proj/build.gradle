@@ -3,7 +3,7 @@ plugins {
     id 'net.minecraftforge.gradle' version '[6.0.24,6.2)'
 }
 
-version = '2.5.1'
+version = '2.5.2'
 group = 'ru.realdocs'
 base { archivesName = 'signed-and-sealed-forge-1.20.1' }
 

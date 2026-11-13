@@ -186,7 +186,7 @@ public final class DocService {
                RegistryService.supersede(sp.server, d);
                RegistryService.snapshot(sp.server, d);
                ok(sp, L.k(d.templateName()) + (d.number.isEmpty() ? "" : " № " + d.number) + L.k(" выпущен и подписан.") + L.k(" Рег. № ") + d.regNo);
-               LOG.info("[Signed & Sealed] {} выпустил документ {} ({} №{})", new Object[]{name, d.docId, d.templateName(), d.number});
+               LOG.info("[Signed & Sealed] {} issued document {} ({} No.{})", new Object[]{name, d.docId, d.templateName(), d.number});
             }
          }
       }
@@ -238,7 +238,7 @@ public final class DocService {
                   r.rehash(store.hmac(d.canonical()));
                   store.setDirty();
                   RegistryService.snapshot(sp.server, d);
-                  LOG.info("[Signed & Sealed] {} подписал документ {}", s.name, d.docId);
+                  LOG.info("[Signed & Sealed] {} signed document {}", s.name, d.docId);
                   return null;
                }
             }
@@ -332,7 +332,7 @@ public final class DocService {
                if (done) {
                   sp.level().playSound(sp, sp.blockPosition(), (SoundEvent)ModSounds.STAMP.get(), SoundSource.PLAYERS, 0.9F, 1.0F);
                   ok(sp, L.k("Печать «") + sm.org + L.k("» поставлена."));
-                  LOG.info("[Signed & Sealed] {} поставил печать {}", sp.getGameProfile().getName(), id);
+                  LOG.info("[Signed & Sealed] {} applied stamp {}", sp.getGameProfile().getName(), id);
                }
             } else {
                err(sp, L.k("Эта печать недействительна или отозвана."));
@@ -561,7 +561,7 @@ public final class DocService {
                   try {
                      DocStore.saveStampImage(sp.server, m.id, png);
                   } catch (IOException var11) {
-                     LOG.error("[Signed & Sealed] не удалось сохранить PNG печати {}", m.id, var11);
+                     LOG.error("[Signed & Sealed] could not save stamp PNG {}", m.id, var11);
                      err(sp, L.k("Не удалось сохранить изображение печати."));
                      return;
                   }
@@ -585,7 +585,7 @@ public final class DocService {
                   }
                }
 
-               LOG.info("[Signed & Sealed] {} создал макет печати {} ({})", new Object[]{m.ownerName, m.id, m.org});
+               LOG.info("[Signed & Sealed] {} created stamp design {} ({})", new Object[]{m.ownerName, m.id, m.org});
             }
          }
       }

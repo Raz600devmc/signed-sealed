@@ -168,7 +168,7 @@ public final class PassportService {
                try {
                   DocStore.saveAsset(sp.server, aid, emblem);
                } catch (IOException var13) {
-                  LOG.error("[Signed & Sealed] не удалось сохранить эмблему {}", aid, var13);
+                  LOG.error("[Signed & Sealed] could not save emblem {}", aid, var13);
                   DocService.err(sp, L.k("Не удалось сохранить эмблему."));
                   return;
                }
@@ -218,7 +218,7 @@ public final class PassportService {
                   store.setDirty();
                   broadcastTemplate(sp.server, t);
                   DocService.ok(sp, L.k("Шаблон ") + t.id + " «" + L.k(t.name) + L.k("» изменён. Уже выданные документы показываются по-новому."));
-                  LOG.info("[Signed & Sealed] {} изменил шаблон {}", sp.getGameProfile().getName(), t.id);
+                  LOG.info("[Signed & Sealed] {} edited template {}", sp.getGameProfile().getName(), t.id);
                }
             } else {
                store.templates.put(t.id, t);
@@ -247,7 +247,7 @@ public final class PassportService {
                   }
                }
 
-               LOG.info("[Signed & Sealed] {} создал шаблон паспорта {} ({})", new Object[]{t.ownerName, t.id, t.name});
+               LOG.info("[Signed & Sealed] {} created passport template {} ({})", new Object[]{t.ownerName, t.id, t.name});
             }
          }
       }
@@ -267,7 +267,7 @@ public final class PassportService {
          t.approved = true;
          store.templates.put(t.id, t);
          store.setDirty();
-         LOG.info("[Signed & Sealed] {} установил готовый шаблон паспорта {} ({})", new Object[]{ownerName, t.id, t.name});
+         LOG.info("[Signed & Sealed] {} installed preset passport template {} ({})", new Object[]{ownerName, t.id, t.name});
          return t;
       }
    }
@@ -386,7 +386,7 @@ public final class PassportService {
                               try {
                                  DocStore.saveAsset(sp.server, aid, photo);
                               } catch (IOException var22) {
-                                 LOG.error("[Signed & Sealed] не удалось сохранить фото {}", aid, var22);
+                                 LOG.error("[Signed & Sealed] could not save photo {}", aid, var22);
                                  DocService.err(sp, L.k("Не удалось сохранить фото."));
                                  return;
                               }
@@ -424,7 +424,7 @@ public final class PassportService {
                            store.setDirty();
                            NbtCodec.writePass(stack, np);
                            DocService.ok(sp, (t.book() ? L.k("Паспорт оформлен. Номер: ") : L.k("Документ оформлен. Номер: ")) + np.serial + ".");
-                           LOG.info("[Signed & Sealed] {} оформил паспорт {} ({})", new Object[]{np.holderName, np.passId, np.serial});
+                           LOG.info("[Signed & Sealed] {} filled in passport {} ({})", new Object[]{np.holderName, np.passId, np.serial});
                         }
                      } else {
                         DocService.err(sp, L.k("Фото не подходит (PNG до ") + "16" + L.k(" КБ)."));
@@ -520,7 +520,7 @@ public final class PassportService {
                   store.setDirty();
                   NbtCodec.writePass(stack, p);
                   DocService.ok(sp, L.k("Данные документа изменены. Старые копии теперь недействительны."));
-                  LOG.info("[Signed & Sealed] {} изменил данные документа {} ({})", new Object[]{sp.getGameProfile().getName(), p.passId, p.serial});
+                  LOG.info("[Signed & Sealed] {} changed the data of document {} ({})", new Object[]{sp.getGameProfile().getName(), p.passId, p.serial});
                }
             }
          }

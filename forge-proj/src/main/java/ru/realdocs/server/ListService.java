@@ -350,7 +350,7 @@ public final class ListService {
          DocService.ok(sp, L.k("Писем разослано: ") + n + ".");
       }
 
-      LOG.info("[Signed & Sealed] {} отправил письмо: {} получател(ей)", sp.getGameProfile().getName(), n);
+      LOG.info("[Signed & Sealed] {} sent a letter to {} recipient(s)", sp.getGameProfile().getName(), n);
    }
 
    static String describe(MailModel m, List<ItemStack> attached) {
@@ -506,7 +506,7 @@ public final class ListService {
          used(sp, n);
          sp.level().playSound(null, sp.blockPosition(), (SoundEvent)ModSounds.PAPER.get(), SoundSource.BLOCKS, 0.9F, 0.9F);
          DocService.ok(sp, L.k("Выпуск «") + ref.name + L.k("» разослан: ") + sent + (sent < n ? L.k(" (у части получателей ящик переполнен)") : "") + ".");
-         LOG.info("[Signed & Sealed] {} разослал газету {} ({} получателей)", sp.getGameProfile().getName(), ref.name, sent);
+         LOG.info("[Signed & Sealed] {} mailed newspaper {} ({} recipients)", sp.getGameProfile().getName(), ref.name, sent);
       }
    }
 

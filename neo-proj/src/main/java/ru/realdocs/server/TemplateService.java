@@ -203,7 +203,7 @@ public final class TemplateService {
          try {
             DocStore.saveAsset(sp.server, aid, png);
          } catch (IOException var6) {
-            LOG.error("[Signed & Sealed] не удалось сохранить логотип {}", aid, var6);
+            LOG.error("[Signed & Sealed] could not save logo {}", aid, var6);
             Net.sendTo(sp, new MorePackets.UploadResult(token, false, "", L.k("Не удалось сохранить картинку на сервере.")));
             return;
          }

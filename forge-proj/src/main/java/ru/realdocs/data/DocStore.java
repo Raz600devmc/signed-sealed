@@ -67,7 +67,7 @@ public class DocStore extends SavedData {
 
          return sb.toString();
       } catch (Exception var9) {
-         throw new IllegalStateException("HMAC недоступен", var9);
+         throw new IllegalStateException("HMAC is not available", var9);
       }
    }
 

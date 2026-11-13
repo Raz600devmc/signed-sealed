@@ -3,7 +3,7 @@ plugins {
     id 'net.neoforged.moddev' version '2.0.148'
 }
 
-version = '2.5.1'
+version = '2.5.2'
 group = 'ru.realdocs'
 base { archivesName = 'signed-and-sealed-neoforge-1.21.1' }
 

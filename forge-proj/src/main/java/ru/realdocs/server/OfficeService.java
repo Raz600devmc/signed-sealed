@@ -168,7 +168,7 @@ public final class OfficeService {
 
                      sp.level().playSound(null, pos, (SoundEvent)ModSounds.PRINT.get(), SoundSource.BLOCKS, 0.9F, 1.0F);
                      DocService.ok(sp, L.k("Напечатано бланков: ") + n + " (" + L.k(t.name) + ").");
-                     LOG.info("[Signed & Sealed] {} напечатал {} бланков шаблона {}", new Object[]{sp.getGameProfile().getName(), n, t.id});
+                     LOG.info("[Signed & Sealed] {} printed {} blank(s) of template {}", new Object[]{sp.getGameProfile().getName(), n, t.id});
                   }
                }
             }
@@ -232,7 +232,7 @@ public final class OfficeService {
 
             sp.level().playSound(null, pos, (SoundEvent)ModSounds.SHRED.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
             DocService.ok(sp, annulled ? L.k("Документ уничтожен и аннулирован в реестре.") : L.k("Документ уничтожен."));
-            LOG.info("[Signed & Sealed] {} уничтожил {} (аннулирован: {})", new Object[]{sp.getGameProfile().getName(), copy.getHoverName().getString(), annulled});
+            LOG.info("[Signed & Sealed] {} shredded {} (annulled: {})", new Object[]{sp.getGameProfile().getName(), copy.getHoverName().getString(), annulled});
          }
       }
    }

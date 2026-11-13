@@ -15,7 +15,7 @@ In-game documents, stamps, hand-drawn signatures, and passports with visas, bord
 - Document readers with redstone output, temporary passes with expiry dates and zones, registry search, computer inbox, a new computer desktop and notice boards (2.5).
 
 ## Current version
-**2.5.1** — Forge 1.20.1 and NeoForge 1.21.1. Client and server must run the same MAJOR.MINOR version (2.5.x).
+**2.5.2** — Forge 1.20.1 and NeoForge 1.21.1. Client and server must run the same MAJOR.MINOR version (2.5.x).
 
 ## Building
 - NeoForge: `cd neo-proj && ./gradlew build` (Java 21)
@@ -28,6 +28,7 @@ This repository contains source code for both loaders:
 
 ## Links
 - [CurseForge Page](https://www.curseforge.com/minecraft/mc-mods/signed-sealed)
+- [Changelog 2.5.2](CHANGELOG-2.5.2.md)
 - [Changelog 2.5.1](CHANGELOG-2.5.1.md)
 - [Changelog 2.5.0](CHANGELOG-2.5.0.md)
 

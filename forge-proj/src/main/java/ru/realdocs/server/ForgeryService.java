@@ -110,7 +110,7 @@ public final class ForgeryService {
                wear(sp, kitHand, 1);
                give(sp, out);
                DocService.ok(sp, L.k("Подделка готова. Внешне её не отличить, но проверка по реестру её выдаст."));
-               LOG.info("[Signed & Sealed] {} сделал подделку документа {}", sp.getGameProfile().getName(), d.docId);
+               LOG.info("[Signed & Sealed] {} forged document {}", sp.getGameProfile().getName(), d.docId);
             }
          } else if (target.getItem() instanceof PassportItem) {
             PassportModel p = NbtCodec.readPass(target);
@@ -165,7 +165,7 @@ public final class ForgeryService {
                   wear(sp, kitHand, 1);
                   give(sp, out);
                   DocService.ok(sp, L.k("Подделка готова. Внешне её не отличить, но проверка по реестру её выдаст."));
-                  LOG.info("[Signed & Sealed] {} сделал подделку документа {} ({})", new Object[]{sp.getGameProfile().getName(), p.passId, p.serial});
+                  LOG.info("[Signed & Sealed] {} forged document {} ({})", new Object[]{sp.getGameProfile().getName(), p.passId, p.serial});
                }
             }
          } else {
@@ -194,7 +194,7 @@ public final class ForgeryService {
             wear(sp, kitHand, 2);
             give(sp, out);
             DocService.ok(sp, L.k("Поддельная печать «") + sm.org + L.k("» готова. Её оттиск проверка распознает как фальшивый."));
-            LOG.info("[Signed & Sealed] {} сделал поддельную печать {}", sp.getGameProfile().getName(), sm.id);
+            LOG.info("[Signed & Sealed] {} made a fake stamp {}", sp.getGameProfile().getName(), sm.id);
          }
       }
    }

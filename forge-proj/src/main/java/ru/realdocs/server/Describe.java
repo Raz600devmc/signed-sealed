@@ -110,12 +110,12 @@ public final class Describe {
          m.date = mm.date;
          m.text = mm.sealed() ? "" : mm.text;
       } else if (s.getItem() instanceof FolderItem) {
-         m.title = s.getHoverName().getString();
+         m.title = L.s(s.getHoverName());
          m.text = "";
       }
 
       if (m.title.isBlank()) {
-         m.title = s.getHoverName().getString();
+         m.title = L.s(s.getHoverName());
       }
 
       return m;

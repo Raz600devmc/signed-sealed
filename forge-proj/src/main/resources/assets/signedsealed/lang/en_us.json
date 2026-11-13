@@ -1545,5 +1545,11 @@
   "Действует до — реальная дата; после неё документ недействителен.": "Valid until — a real date; after it the document is no longer valid.",
   "Кому выдан — считыватель пропустит только этого игрока.": "Issued to — the reader will only let this player through.",
   "Зоны — считыватель с такой зоной примет пропуск.": "Zones — a reader set to one of these zones will accept the pass.",
-  "Закрытый — в реестре видны только статус и тип, подробности — участникам.": "Private — the registry shows only status and type; details are for participants."
+  "Закрытый — в реестре видны только статус и тип, подробности — участникам.": "Private — the registry shows only status and type; details are for participants.",
+  "КанцОС": "OfficeOS",
+  "КанцОС 98": "OfficeOS 98",
+  "КАНЦЕЛЯРИЯ-98": "CHANCERY-98",
+  "Не удалось сделать резервную копию, подробности в логе сервера.": "Backup failed, see the server log for details.",
+  "Резервная копия сохранена: файлов — ": "Backup saved: files — ",
+  ", всего копий в signedsealed_backups — ": ", total backups in signedsealed_backups — "
 }

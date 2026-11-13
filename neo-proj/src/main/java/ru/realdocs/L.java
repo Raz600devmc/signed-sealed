@@ -80,6 +80,31 @@ public final class L {
       }
    }
 
+   /** Turns a component back into a marked string, so a dedicated server can pass names on untranslated. */
+   public static String s(Component c) {
+      StringBuilder out = new StringBuilder();
+      if (c != null) {
+         mark(c, out);
+      }
+
+      return out.toString();
+   }
+
+   private static void mark(Component c, StringBuilder out) {
+      if (c.getContents() instanceof net.minecraft.network.chat.contents.TranslatableContents tc && tc.getArgs().length == 0) {
+         out.append(k(tc.getKey()));
+      } else {
+         c.getContents().visit(text -> {
+            out.append(text);
+            return java.util.Optional.empty();
+         });
+      }
+
+      for (Component p : c.getSiblings()) {
+         mark(p, out);
+      }
+   }
+
    public static MutableComponent c(String s) {
       if (s == null) {
          return Component.empty();

@@ -91,7 +91,7 @@ public final class PaperService {
          try {
             DocStore.saveAsset(sp.server, aid, png);
          } catch (IOException var7) {
-            LOG.error("[Signed & Sealed] не удалось сохранить картинку газеты {}", aid, var7);
+            LOG.error("[Signed & Sealed] could not save newspaper image {}", aid, var7);
             Net.sendTo(sp, new MorePackets.UploadResult(token, false, "", L.k("Не удалось сохранить картинку на сервере.")));
             return;
          }
@@ -227,7 +227,7 @@ public final class PaperService {
          try {
             DocStore.savePaper(sp.server, id, Plat.pack(PaperCodec.write(m)));
          } catch (IOException var17) {
-            LOG.error("[Signed & Sealed] не удалось сохранить газету {}", id, var17);
+            LOG.error("[Signed & Sealed] could not save newspaper {}", id, var17);
             reply(sp, token, false, "", L.k("Не удалось сохранить вёрстку на сервере."));
             return;
          }
@@ -259,7 +259,7 @@ public final class PaperService {
          if (publish) {
             sp.level().playSound(null, sp.blockPosition(), (SoundEvent)ModSounds.PRINT.get(), SoundSource.PLAYERS, 0.7F, 1.1F);
             DocService.ok(sp, L.k(NewspaperItem.kind(m.format)) + " «" + m.name + "» № " + m.issue + L.k(" опубликован. Тираж печатается на принтере."));
-            LOG.info("[Signed & Sealed] {} опубликовал «{}» №{} ({})", new Object[]{sp.getGameProfile().getName(), m.name, m.issue, id});
+            LOG.info("[Signed & Sealed] {} published \"{}\" No.{} ({})", new Object[]{sp.getGameProfile().getName(), m.name, m.issue, id});
          }
 
          reply(sp, token, true, id, publish ? L.k("Опубликовано.") : L.k("Черновик сохранён."));
@@ -342,7 +342,7 @@ public final class PaperService {
 
                sp.level().playSound(null, sp.blockPosition(), (SoundEvent)ModSounds.PRINT.get(), SoundSource.BLOCKS, 0.9F, 1.0F);
                DocService.ok(sp, L.k("Напечатан тираж: ") + n + L.k(" экз. «") + r.name + "» № " + r.issue + ".");
-               LOG.info("[Signed & Sealed] {} напечатал {} экз. {}", new Object[]{sp.getGameProfile().getName(), n, r.id});
+               LOG.info("[Signed & Sealed] {} printed {} copies of {}", new Object[]{sp.getGameProfile().getName(), n, r.id});
             }
          }
       }

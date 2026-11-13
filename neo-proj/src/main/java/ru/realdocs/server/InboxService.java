@@ -160,7 +160,7 @@ public final class InboxService {
       } else if (s.getItem() instanceof NewspaperItem) {
          return "«" + PaperCodec.ref(s).name + "»";
       } else {
-         return s.getHoverName().getString();
+         return L.s(s.getHoverName());
       }
    }
 

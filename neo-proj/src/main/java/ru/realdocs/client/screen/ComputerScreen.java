@@ -786,7 +786,7 @@ public final class ComputerScreen extends UiScreen {
       g.fill(x, y, x + 40, y + 30, -12566464);
       g.fill(x + 3, y + 3, x + 37, y + 24, -15641470);
       g.fill(x + 14, y + 30, x + 26, y + 34, -6250336);
-      g.drawString(this.font, "КанцОС 98", x + 52, y + 2, BLACK, false);
+      g.drawString(this.font, L.t("КанцОС 98"), x + 52, y + 2, BLACK, false);
       g.drawString(this.font, L.t("Операционная система для канцелярий"), x + 52, y + 14, GREY_TXT, false);
       y += 50;
       y = this.row2(g, L.t("Сеть архива"), this.data.network, x, x + 120, y, this.cw - 24);
@@ -926,13 +926,13 @@ public final class ComputerScreen extends UiScreen {
       g.fill(this.mx0 + this.mw - 1, this.my0, this.mx0 + this.mw, this.my0 + this.mh, -8355712);
       g.fill(this.sx0 - 2, this.sy0 - 2, this.sx0 + this.sw + 2, this.sy0 + this.sh + 2, -14671840);
       g.fillGradient(this.sx0, this.sy0, this.sx0 + this.sw, this.sy0 + this.sh, -16748395, -16763046);
-      String brand = "КанцОС";
+      String brand = L.t("КанцОС");
       g.pose().pushPose();
       g.pose().translate((float)(this.sx0 + this.sw / 2), (float)(this.sy0 + this.sh / 2 - 12), 0.0F);
       g.pose().scale(3.0F, 3.0F, 1.0F);
       g.drawString(this.font, brand, -this.font.width(brand) / 2, 0, 0x30FFFFFF, false);
       g.pose().popPose();
-      g.drawString(this.font, "КАНЦЕЛЯРИЯ-98", this.mx0 + 12, this.my0 + this.mh - 14, -9408400, false);
+      g.drawString(this.font, L.t("КАНЦЕЛЯРИЯ-98"), this.mx0 + 12, this.my0 + this.mh - 14, -9408400, false);
       g.fill(this.mx0 + this.mw - 18, this.my0 + this.mh - 12, this.mx0 + this.mw - 12, this.my0 + this.mh - 9, -14375918);
 
       for (int i = 0; i < DESKTOP.length; i++) {
@@ -984,7 +984,7 @@ public final class ComputerScreen extends UiScreen {
          g.pose().pushPose();
          g.pose().translate((float)(this.sx0 + 9), (float)(y0 + h - 6), 0.0F);
          g.pose().mulPose(com.mojang.math.Axis.ZP.rotationDegrees(-90.0F));
-         g.drawString(this.font, "КанцОС", 0, 0, -1, false);
+         g.drawString(this.font, L.t("КанцОС"), 0, 0, -1, false);
          g.pose().popPose();
       }
 

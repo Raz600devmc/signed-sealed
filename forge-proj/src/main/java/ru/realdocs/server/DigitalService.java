@@ -142,7 +142,7 @@ public final class DigitalService {
                   DocService.ok(
                      sp, done == 1 ? L.k("Оцифровано в архив «") + t.net() + "»: " + lastId : L.k("Оцифровано документов: ") + done + L.k(" в архив «") + t.net() + "»"
                   );
-                  LOG.info("[Signed & Sealed] {} оцифровал {} док. в архив {}", new Object[]{sp.getGameProfile().getName(), done, t.net()});
+                  LOG.info("[Signed & Sealed] {} scanned {} document(s) into archive {}", new Object[]{sp.getGameProfile().getName(), done, t.net()});
                }
 
                if (!skipped.isEmpty() && done < batch.size()) {

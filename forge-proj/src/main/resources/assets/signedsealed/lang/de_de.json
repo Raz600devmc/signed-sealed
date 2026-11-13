@@ -1545,5 +1545,11 @@
   "Действует до — реальная дата; после неё документ недействителен.": "Gültig bis — ein echtes Datum; danach ist das Dokument ungültig.",
   "Кому выдан — считыватель пропустит только этого игрока.": "Ausgestellt für — der Leser lässt nur diesen Spieler durch.",
   "Зоны — считыватель с такой зоной примет пропуск.": "Zonen — ein Leser mit einer dieser Zonen nimmt den Passierschein an.",
-  "Закрытый — в реестре видны только статус и тип, подробности — участникам.": "Privat — das Register zeigt nur Status und Typ; Details nur für Beteiligte."
+  "Закрытый — в реестре видны только статус и тип, подробности — участникам.": "Privat — das Register zeigt nur Status und Typ; Details nur für Beteiligte.",
+  "КанцОС": "KanzleiOS",
+  "КанцОС 98": "KanzleiOS 98",
+  "КАНЦЕЛЯРИЯ-98": "KANZLEI-98",
+  "Не удалось сделать резервную копию, подробности в логе сервера.": "Sicherung fehlgeschlagen, Details im Serverprotokoll.",
+  "Резервная копия сохранена: файлов — ": "Sicherung gespeichert: Dateien — ",
+  ", всего копий в signedsealed_backups — ": ", Sicherungen in signedsealed_backups insgesamt — "
 }

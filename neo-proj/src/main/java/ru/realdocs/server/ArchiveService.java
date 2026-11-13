@@ -65,7 +65,7 @@ public final class ArchiveService {
          ItemStack s = a.items.get(i);
          Describe.Meta m = Describe.of(null, s);
          int n = s.getItem() instanceof FolderItem ? MailCodec.count(s, MailCodec.FOLDER_TAG) : 0;
-         es.add(new ArchivePackets.Entry(String.valueOf(i), m.type, s.getHoverName().getString(), Describe.line(m, n)));
+         es.add(new ArchivePackets.Entry(String.valueOf(i), m.type, L.s(s.getHoverName()), Describe.line(m, n)));
       }
 
       Net.sendTo(sp, new ArchivePackets.ArchiveData(a.getBlockPos(), a.capacity(), a.label, a.ownerName, a.locked, a.isOwner(sp), a.membersText(), es));

@@ -369,7 +369,7 @@ public final class AdminService {
          }
 
          if (r.ok()) {
-            LOG.info("[Signed & Sealed] панель: {} -> действие {} над {}: {}", new Object[]{actor, action, id, L.plain(r.msg())});
+            LOG.info("[Signed & Sealed] admin panel: {} -> action {} on {}: {}", new Object[]{actor, action, id, L.plain(r.msg())});
          }
 
          sendPanel(sp, query, r.msg(), r.ok());

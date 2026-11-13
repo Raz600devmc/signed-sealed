@@ -1,5 +1,7 @@
 package ru.realdocs.server;
 
+import ru.realdocs.L;
+
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.logging.LogUtils;
 import java.io.IOException;
@@ -14,7 +16,6 @@ import java.util.List;
 import java.util.stream.Stream;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
@@ -91,10 +92,11 @@ public final class BackupService {
          server.overworld().getDataStorage().save();
          int made = backup(server, "manual");
          if (made < 0) {
-            src.sendFailure(Component.literal("[Signed & Sealed] Backup failed, see the server log."));
+            src.sendFailure(L.c(L.k("Не удалось сделать резервную копию, подробности в логе сервера.")));
             return 0;
          } else {
-            src.sendSuccess(() -> Component.literal("[Signed & Sealed] Backup saved: " + made + " file(s) in signedsealed_backups (" + countBackups(server) + " kept)."), true);
+            int kept = countBackups(server);
+            src.sendSuccess(() -> L.c(L.k("Резервная копия сохранена: файлов — ") + made + L.k(", всего копий в signedsealed_backups — ") + kept + "."), true);
             return 1;
          }
       })));
